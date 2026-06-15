@@ -118,7 +118,7 @@ button {
 
 .desktop-workspace-shell {
   min-width: 0;
-  max-width: 260px;
+  max-width: 220px;
   height: 40px;
   display: inline-flex;
   align-items: center;
@@ -131,8 +131,7 @@ button {
   transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
 }
 
-.desktop-workspace-name-button,
-.desktop-workspace-menu-button {
+.desktop-workspace-name-button {
   border: none;
   background: transparent;
   color: var(--desktop-root-text);
@@ -149,17 +148,6 @@ button {
   flex: 1 1 auto;
 }
 
-.desktop-workspace-menu-button {
-  width: 38px;
-  height: 100%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex: 0 0 auto;
-  border-left: 1px solid transparent;
-}
-
 .desktop-workspace-trigger-label {
   min-width: 0;
   overflow: hidden;
@@ -172,20 +160,11 @@ button {
   letter-spacing: 0.05em;
 }
 
-.desktop-workspace-trigger-chevron {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--desktop-muted-subtle);
-  flex: 0 0 auto;
-}
-
 .desktop-workspace-shell:hover {
   background: rgba(255, 255, 255, 0.72);
 }
 
-.desktop-workspace-name-button:hover,
-.desktop-workspace-menu-button:hover {
+.desktop-workspace-name-button:hover {
   background: transparent;
 }
 
@@ -309,13 +288,10 @@ button {
 }
 
 .desktop-collection-view {
-  display: grid;
-  place-items: center;
+  display: block;
   overflow: hidden;
   position: relative;
-  background:
-    radial-gradient(circle at 50% 28%, rgba(17, 17, 17, 0.035), transparent 34%),
-    var(--desktop-root-bg);
+  background: var(--desktop-root-bg);
 }
 
 .desktop-collection-view::before {
@@ -339,32 +315,91 @@ button {
   mask-image: linear-gradient(180deg, var(--desktop-canvas-dot-fade-top) 0%, rgba(0, 0, 0, 1) 18%, rgba(0, 0, 0, 1) 72%, var(--desktop-canvas-dot-fade-bottom) 100%);
 }
 
-.desktop-collection-empty-state {
+.desktop-generated-collection {
   position: relative;
   z-index: 1;
-  width: min(520px, calc(100vw - 48px));
-  padding: 56px 48px;
-  border-radius: 32px;
-  border: 1px solid rgba(17, 17, 17, 0.06);
-  background: rgba(255, 255, 255, 0.72);
-  box-shadow: 0 22px 60px rgba(17, 17, 17, 0.055);
-  text-align: center;
+  width: 100%;
+  min-height: 100%;
+  padding: 138px 68px 96px;
 }
 
-.desktop-collection-empty-state h1 {
-  margin: 0;
-  color: var(--desktop-root-text);
-  font-family: "DM Serif Display", Georgia, serif;
-  font-size: 36px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+.desktop-utopia-blank-surface {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 100%;
 }
 
-.desktop-collection-empty-state p {
-  margin: 12px 0 0;
-  color: var(--desktop-muted-strong);
+.desktop-generated-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(150px, 1fr));
+  gap: 22px 18px;
+}
+
+.desktop-generated-photo-tile {
+  position: relative;
+  aspect-ratio: 1.42 / 1;
+  min-height: 118px;
+  border-radius: 3px;
+  border: 1px solid rgba(17, 17, 17, 0.035);
+  background: #d8d8d8;
+  box-shadow: 0 1px 1px rgba(17, 17, 17, 0.035);
+  overflow: hidden;
+  animation: collection-tile-in 420ms ease both;
+  animation-delay: calc(var(--tile-index) * 36ms);
+  transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease;
+}
+
+.desktop-generated-photo-tile::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent 42%),
+    radial-gradient(circle at 70% 22%, rgba(255, 255, 255, 0.16), transparent 28%);
+  opacity: 0.72;
+}
+
+.desktop-generated-photo-tile.tone-1 {
+  background: #d3d3d2;
+}
+
+.desktop-generated-photo-tile.tone-2 {
+  background: #dcdcdc;
+}
+
+.desktop-generated-photo-tile.tone-3 {
+  background: #d6d7d5;
+}
+
+.desktop-generated-photo-tile:hover {
+  transform: translateY(-2px);
+  filter: brightness(0.985);
+  box-shadow: 0 12px 26px rgba(17, 17, 17, 0.075);
+}
+
+.desktop-collection-more-indicator {
+  position: absolute;
+  left: 50%;
+  bottom: 23%;
+  transform: translateX(-50%);
+  color: rgba(17, 17, 17, 0.2);
+  font-family: "JetBrains Mono", monospace;
   font-size: 15px;
-  line-height: 1.5;
+  letter-spacing: 1px;
+}
+
+@keyframes collection-tile-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .desktop-floating-add-button {
@@ -422,5 +457,32 @@ button {
   .desktop-header-avatar-button {
     width: 38px;
     height: 38px;
+  }
+
+  .desktop-generated-collection {
+    padding: 116px 26px 88px;
+  }
+
+  .desktop-generated-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .desktop-generated-photo-tile {
+    min-height: 104px;
+  }
+
+  .desktop-collection-more-indicator {
+    bottom: 12%;
+  }
+}
+
+@media (min-width: 721px) and (max-width: 1080px) {
+  .desktop-generated-collection {
+    padding-inline: 48px;
+  }
+
+  .desktop-generated-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
