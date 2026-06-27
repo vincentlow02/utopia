@@ -6,6 +6,7 @@ body {
   background: var(--color-background);
   font-family: var(--font-sans);
   font-synthesis: none;
+  overflow-x: hidden;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

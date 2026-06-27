@@ -3,14 +3,18 @@ import { createBrowserRouter } from 'react-router-dom'
 import { routes } from './paths'
 import { CapturePage } from '../../pages/CapturePage'
 import { GalleryPage } from '../../pages/GalleryPage'
-import { HomePage } from '../../pages/HomePage'
 import { PromptReviewPage } from '../../pages/PromptReviewPage'
 import { ResultPage } from '../../pages/ResultPage'
+import { UtopiaPage } from '../../pages/UtopiaPage'
 
 export const router = createBrowserRouter([
   {
     path: routes.home,
-    element: <HomePage />,
+    element: <UtopiaPage />,
+  },
+  {
+    path: routes.utopia,
+    element: <UtopiaPage />,
   },
   {
     path: routes.capture,

@@ -1,5 +1,6 @@
 export const routes = {
   home: '/',
+  utopia: '/utopia',
   capture: '/capture',
   promptReview: '/prompt-review',
   result: '/result',
