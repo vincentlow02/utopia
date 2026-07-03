@@ -1,0 +1,31 @@
+.object-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.detail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.detail-section h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.detail-section p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.button-group {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.button-group button {
+  flex: 1;
+}
