@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@600&family=Manrope:wght@400;500;600&family=Playfair+Display:wght@800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=Manrope:wght@400;500;600&family=Playfair+Display:wght@800&display=swap');
 
 .utopia-collection {
   width: 100%;
@@ -8,12 +8,47 @@
   color: #000000;
 }
 
+.utopia-collection[data-active-view='utopia'] {
+  height: 100svh;
+  min-height: 0;
+  padding: 26px 37px 28px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
 .utopia-collection__header {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   width: 100%;
-  min-height: 38px;
+  min-height: 40px;
+}
+
+.utopia-collection__header-side {
+  display: flex;
+  align-items: center;
+  width: 160px;
+  min-width: 160px;
+  overflow: hidden;
+}
+
+.utopia-collection__header-side--left {
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+.utopia-collection__header-side--right {
+  justify-content: flex-end;
+}
+
+.utopia-collection__header-center {
+  display: flex;
+  flex: 1 1 0;
+  align-self: stretch;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .utopia-collection__title {
@@ -26,14 +61,21 @@
   white-space: nowrap;
 }
 
+.utopia-collection__header-hint {
+  width: 11px;
+  height: 12px;
+  color: #b6b6b6;
+  flex: 0 0 auto;
+}
+
 .utopia-collection__switcher {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 17px;
-  height: 38px;
-  padding: 0 9px;
-  border-radius: 23px;
+  gap: 19px;
+  padding: 12px;
+  border: 1px solid #e6e6e6;
+  border-radius: 36px;
   background: #ffffff;
 }
 
@@ -42,7 +84,7 @@
   align-items: center;
   justify-content: center;
   width: 6px;
-  height: 9px;
+  height: 10px;
   padding: 0;
   border: 0;
   color: #000000;
@@ -52,28 +94,27 @@
 
 .utopia-collection__chevron {
   width: 6px;
-  height: 9px;
+  height: 10px;
 }
 
 .utopia-collection__switcher-label {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 16px;
-  font-weight: 800;
+  font-family: Inter, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
   line-height: 1;
-  letter-spacing: 0.64px;
+  letter-spacing: 0;
   white-space: nowrap;
 }
 
 .utopia-collection__user-button {
-  justify-self: end;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 25px;
-  height: 25px;
-  padding: 0;
+  height: 26px;
+  padding: 10px;
   border: 0;
-  border-radius: 50%;
+  border-radius: 42px;
   color: #ffffff;
   background: #bf360c;
   font-family: Helvetica, Arial, sans-serif;
@@ -86,7 +127,8 @@
 
 .utopia-collection__switcher-button:focus-visible,
 .utopia-collection__user-button:focus-visible,
-.utopia-collection__paper:focus-visible {
+.utopia-collection__paper:focus-visible,
+.utopia-home__generate-button:focus-visible {
   outline: 2px solid rgba(191, 54, 12, 0.38);
   outline-offset: 3px;
 }
@@ -109,6 +151,182 @@
   cursor: pointer;
 }
 
+.utopia-home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 34px;
+  width: 100%;
+  margin-top: 42px;
+}
+
+.utopia-home__camera-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 720px;
+  max-width: 100%;
+  height: clamp(200px, calc(100svh - 411px), 319px);
+  border: 1px dashed #dedede;
+  border-radius: 13px;
+  background: #fdfdfd;
+}
+
+.utopia-home__camera-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 227px;
+}
+
+.utopia-home__camera-icon {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+
+.utopia-home__camera-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+  font-family: 'SF Pro', 'SF Pro Text', -apple-system, BlinkMacSystemFont, Inter, Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.15px;
+  text-align: center;
+}
+
+.utopia-home__camera-copy p {
+  width: 100%;
+  margin: 0;
+}
+
+.utopia-home__camera-copy p:first-child {
+  color: #000000;
+}
+
+.utopia-home__camera-copy p:last-child {
+  color: #6a6a6a;
+}
+
+.utopia-home__workflow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 26px;
+}
+
+.utopia-home__elements {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 37px;
+  max-width: 100%;
+}
+
+.utopia-home__element-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+  width: 146px;
+  height: 171px;
+  border: 0.7px solid #dedede;
+  border-radius: 12px;
+  background: #fdfcfd;
+}
+
+.utopia-home__element-icon {
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.utopia-home__element-icon--function {
+  width: 40px;
+  height: 43px;
+}
+
+.utopia-home__element-icon--material {
+  width: 44px;
+  height: 49px;
+}
+
+.utopia-home__element-icon--mood {
+  width: 45px;
+  height: 53px;
+}
+
+.utopia-home__element-icon--furniture {
+  width: 58px;
+  height: 59px;
+}
+
+.utopia-home__element-icon--natural {
+  width: 38px;
+  height: 52px;
+}
+
+.utopia-home__element-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  font-family: 'SF Pro', 'SF Pro Text', -apple-system, BlinkMacSystemFont, Inter, Arial, sans-serif;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.utopia-home__element-copy h2 {
+  width: 100%;
+  margin: 0;
+  color: #787878;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.14px;
+}
+
+.utopia-home__element-copy p {
+  width: 100%;
+  margin: 0;
+  color: #666666;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+}
+
+.utopia-home__generate-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 345px;
+  max-width: 100%;
+  height: 44px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 31px;
+  color: #ffffff;
+  background: #000000;
+  font-family: Inter, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.utopia-home__generate-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
 .utopia-account-overlay {
   position: fixed;
   inset: 0;
@@ -121,6 +339,7 @@
 }
 
 .utopia-account-panel {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -132,6 +351,7 @@
   border-radius: 21px;
   background: #ffffff;
   box-shadow: 0 18px 24px rgba(17, 17, 17, 0.08);
+  overflow: visible;
 }
 
 .utopia-account-panel__close-row {
@@ -290,6 +510,57 @@
   cursor: pointer;
 }
 
+.utopia-language-menu {
+  position: absolute;
+  top: 210px;
+  right: 31px;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  width: 108px;
+  padding: 9px 9px 9px 13px;
+  border: 0.4px solid #d0d0d0;
+  border-radius: 7px;
+  background: #ffffff;
+  box-shadow: 0 1px 3.15px rgba(0, 0, 0, 0.05);
+}
+
+.utopia-language-menu__option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 13px;
+  padding: 0;
+  border: 0;
+  color: #000000;
+  background: transparent;
+  font-family: Inter, Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.utopia-language-menu__option + .utopia-language-menu__option {
+  margin-top: 10px;
+}
+
+.utopia-language-menu__check {
+  width: 6px;
+  height: 5px;
+  color: #000000;
+}
+
+.utopia-language-menu__option:focus-visible {
+  outline: 2px solid rgba(0, 0, 0, 0.18);
+  outline-offset: 2px;
+}
+
 .utopia-account-panel__close-button:focus-visible,
 .utopia-account-panel__item:focus-visible,
 .utopia-account-panel__logout:focus-visible {
@@ -302,15 +573,13 @@
     padding: 22px 24px 32px;
   }
 
-  .utopia-collection__header {
-    grid-template-columns: 1fr auto;
-    gap: 18px 16px;
+  .utopia-collection[data-active-view='utopia'] {
+    padding: 28px 24px 44px;
   }
 
-  .utopia-collection__switcher {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    justify-self: center;
+  .utopia-collection__header-side {
+    width: 120px;
+    min-width: 120px;
   }
 
   .utopia-collection__grid {
@@ -322,11 +591,104 @@
     height: auto;
     aspect-ratio: 230.8 / 159;
   }
+
+  .utopia-home {
+    gap: 40px;
+    margin-top: 42px;
+  }
+
+  .utopia-home__camera-panel {
+    height: 260px;
+  }
+
+  .utopia-home__elements {
+    flex-wrap: wrap;
+    gap: 20px;
+  }
 }
 
 @media (min-width: 901px) and (max-width: 1279px) {
   .utopia-collection__paper {
     height: auto;
     aspect-ratio: 230.8 / 159;
+  }
+
+  .utopia-home__elements {
+    gap: 28px;
+  }
+}
+
+@media (max-height: 700px) and (min-width: 901px) {
+  .utopia-collection[data-active-view='utopia'] {
+    padding-top: 26px;
+    padding-bottom: 24px;
+  }
+
+  .utopia-home {
+    gap: 28px;
+    margin-top: 32px;
+  }
+
+  .utopia-home__camera-panel {
+    height: clamp(180px, calc(100svh - 387px), 319px);
+  }
+
+  .utopia-home__workflow {
+    gap: 22px;
+  }
+}
+
+@media (max-width: 640px) {
+  .utopia-collection {
+    padding: 20px 18px 28px;
+  }
+
+  .utopia-collection[data-active-view='utopia'] {
+    padding: 24px 18px 36px;
+  }
+
+  .utopia-collection__header-side {
+    width: 72px;
+    min-width: 72px;
+  }
+
+  .utopia-collection__title {
+    font-size: 20px;
+    letter-spacing: 0.6px;
+  }
+
+  .utopia-collection__header-hint {
+    display: none;
+  }
+
+  .utopia-collection__switcher {
+    gap: 13px;
+    padding: 10px;
+  }
+
+  .utopia-collection__switcher-label {
+    font-size: 12px;
+  }
+
+  .utopia-home__camera-panel {
+    height: 226px;
+  }
+
+  .utopia-home__workflow {
+    width: 100%;
+  }
+
+  .utopia-home__elements {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 146px));
+    gap: 18px;
+  }
+
+  .utopia-home__element-card {
+    width: 100%;
+  }
+
+  .utopia-home__generate-button {
+    width: min(345px, 100%);
   }
 }
