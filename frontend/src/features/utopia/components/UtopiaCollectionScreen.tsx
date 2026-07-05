@@ -911,6 +911,7 @@ function ElementActionMenu({ elementTitle, copy }: ElementActionMenuProps) {
 
 type ObjectLibraryPanelProps = {
   copy: UtopiaCopy
+  onClose: () => void
   onMaterialSelect: (item: LibraryItem) => void
   onMaterialDragStart: (item: LibraryItem) => void
 }
@@ -1117,7 +1118,7 @@ function LibraryDetailCard({ backCopies, copy, item, onClose }: LibraryDetailCar
   )
 }
 
-function ObjectLibraryPanel({ copy, onMaterialSelect, onMaterialDragStart }: ObjectLibraryPanelProps) {
+function ObjectLibraryPanel({ copy, onClose, onMaterialSelect, onMaterialDragStart }: ObjectLibraryPanelProps) {
   const [selectedCategory, setSelectedCategory] = useState<LibraryCategoryId>('all')
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -1126,9 +1127,14 @@ function ObjectLibraryPanel({ copy, onMaterialSelect, onMaterialDragStart }: Obj
       <div className="utopia-object-library__content" data-node-id="287:842">
         <header className="utopia-object-library__header" data-node-id="286:599">
           <h2>{copy.library.title}</h2>
-          <span className="utopia-object-library__close-button" aria-hidden="true">
+          <button
+            type="button"
+            className="utopia-object-library__close-button"
+            aria-label="Collapse"
+            onClick={onClose}
+          >
             <img src={libraryCloseIconUrl} alt="" />
-          </span>
+          </button>
         </header>
 
         <div className="utopia-object-library__controls" data-node-id="286:603">
@@ -1511,6 +1517,7 @@ export function UtopiaCollectionScreen() {
         <>
           <ObjectLibraryPanel
             copy={copy}
+            onClose={() => setIsObjectLibraryOpen(false)}
             onMaterialSelect={setSelectedLibraryItem}
             onMaterialDragStart={setDraggedLibraryItem}
           />
