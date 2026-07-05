@@ -5,10 +5,22 @@ import chevronRightIconUrl from '../../../assets/icons/utopia/chevron-right.svg'
 import functionIconUrl from '../../../assets/icons/utopia/function.svg'
 import furnitureIconUrl from '../../../assets/icons/utopia/furniture.svg'
 import headerHintIconUrl from '../../../assets/icons/utopia/header-hint.svg'
+import libraryCloseIconUrl from '../../../assets/icons/utopia/library-close.svg'
+import libraryFilterIconUrl from '../../../assets/icons/utopia/library-filter.svg'
+import librarySearchIconUrl from '../../../assets/icons/utopia/library-search.svg'
 import materialIconUrl from '../../../assets/icons/utopia/material.svg'
 import moodIconUrl from '../../../assets/icons/utopia/mood.svg'
 import naturalIconUrl from '../../../assets/icons/utopia/natural.svg'
+import removeMaterialIconUrl from '../../../assets/icons/utopia/remove-material.svg'
+import sendPhoneIconUrl from '../../../assets/icons/utopia/send-phone.svg'
 import sparkleIconUrl from '../../../assets/icons/utopia/sparkle.svg'
+import takePhotoIconUrl from '../../../assets/icons/utopia/take-photo.svg'
+import uploadImageIconUrl from '../../../assets/icons/utopia/upload-image.svg'
+import andesitePebbleImageUrl from '../../../assets/images/utopia-library/andesite-pebble.png'
+import linenFabricImageUrl from '../../../assets/images/utopia-library/linen-fabric.png'
+import oakWoodImageUrl from '../../../assets/images/utopia-library/oak-wood.png'
+import paperLanternImageUrl from '../../../assets/images/utopia-library/paper-lantern.png'
+import sphereImageUrl from '../../../assets/images/utopia-library/sphere.png'
 import './UtopiaCollectionScreen.css'
 
 const galleryItems = Array.from({ length: 10 }, (_, index) => ({
@@ -31,7 +43,51 @@ const utopiaElementCards = [
   { id: 'natural', title: 'Natural', description: 'How nature appears', iconUrl: naturalIconUrl },
 ] as const
 
+const elementMenuOptions = [
+  { id: 'upload-image', label: 'Upload Image', iconUrl: uploadImageIconUrl },
+  { id: 'take-photo', label: 'Take Photo', iconUrl: takePhotoIconUrl },
+  { id: 'send-phone', label: 'Send from phone', iconUrl: sendPhoneIconUrl },
+] as const
+
+const libraryCategories = ['すべて', '素材', '自然', '形', '質感', 'その他'] as const
+
+const libraryItems = [
+  {
+    id: 'oak-wood',
+    title: 'オーク材',
+    subtitle: 'Oak Wood',
+    imageUrl: oakWoodImageUrl,
+  },
+  {
+    id: 'andesite-pebble',
+    title: '安山岩の玉石',
+    subtitle: 'Andesite pebble',
+    imageUrl: andesitePebbleImageUrl,
+  },
+  {
+    id: 'sphere',
+    title: '球体',
+    subtitle: 'Sphere',
+    imageUrl: sphereImageUrl,
+  },
+  {
+    id: 'linen-fabric',
+    title: 'リネン生地',
+    subtitle: 'Linen Fabric',
+    imageUrl: linenFabricImageUrl,
+  },
+  {
+    id: 'paper-lantern',
+    title: '和紙',
+    subtitle: 'Paper Lantern',
+    imageUrl: paperLanternImageUrl,
+  },
+] as const
+
 type LanguageOption = (typeof languageOptions)[number]
+type LibraryItem = (typeof libraryItems)[number]
+type UtopiaElementId = (typeof utopiaElementCards)[number]['id']
+type UtopiaElementAssignments = Partial<Record<UtopiaElementId, LibraryItem>>
 type UtopiaView = 'collection' | 'utopia'
 
 type ChevronIconProps = {
@@ -153,6 +209,103 @@ function SparkleIcon() {
   return <img aria-hidden="true" className="utopia-home__generate-icon" src={sparkleIconUrl} alt="" />
 }
 
+type ElementActionMenuProps = {
+  elementTitle: string
+}
+
+function ElementActionMenu({ elementTitle }: ElementActionMenuProps) {
+  return (
+    <div className="utopia-element-menu" role="menu" aria-label={`${elementTitle} input options`} data-node-id="266:528" data-name="exportmenu">
+      <div className="utopia-element-menu__options" data-node-id="266:529">
+        {elementMenuOptions.map((option) => (
+          <button type="button" className="utopia-element-menu__option" role="menuitem" key={option.id}>
+            <img
+              aria-hidden="true"
+              className={`utopia-element-menu__icon utopia-element-menu__icon--${option.id}`}
+              src={option.iconUrl}
+              alt=""
+            />
+            <span>{option.label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+type ObjectLibraryPanelProps = {
+  onMaterialDragStart: (item: LibraryItem) => void
+}
+
+function ObjectLibraryPanel({ onMaterialDragStart }: ObjectLibraryPanelProps) {
+  const [selectedCategory, setSelectedCategory] = useState<(typeof libraryCategories)[number]>('すべて')
+
+  return (
+    <aside className="utopia-object-library" aria-label="Object library" data-node-id="286:597">
+      <div className="utopia-object-library__content" data-node-id="287:842">
+        <header className="utopia-object-library__header" data-node-id="286:599">
+          <h2>オブジェクトライブラリ</h2>
+          <span className="utopia-object-library__close-button" aria-hidden="true">
+            <img src={libraryCloseIconUrl} alt="" />
+          </span>
+        </header>
+
+        <div className="utopia-object-library__controls" data-node-id="286:603">
+          <div className="utopia-object-library__search-row" data-node-id="286:604">
+            <label className="utopia-object-library__search" data-node-id="286:605">
+              <img aria-hidden="true" src={librarySearchIconUrl} alt="" />
+              <span>検索する</span>
+            </label>
+            <button type="button" className="utopia-object-library__filter-button" aria-label="Filter object library" data-node-id="286:608">
+              <img aria-hidden="true" src={libraryFilterIconUrl} alt="" />
+            </button>
+          </div>
+
+          <div className="utopia-object-library__tabs" aria-label="Object categories" data-node-id="286:610">
+            {libraryCategories.map((category) => (
+              <button
+                type="button"
+                className="utopia-object-library__tab"
+                data-selected={selectedCategory === category}
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="utopia-object-library__grid" data-node-id="287:841">
+          {libraryItems.map((item) => (
+            <button
+              type="button"
+              className="utopia-object-library__card"
+              data-item-id={item.id}
+              draggable
+              key={item.id}
+              onDragStart={(event) => {
+                event.dataTransfer.effectAllowed = 'copy'
+                event.dataTransfer.setData('application/x-utopia-library-item', item.id)
+                event.dataTransfer.setData('text/plain', item.title)
+                onMaterialDragStart(item)
+              }}
+            >
+              <span className="utopia-object-library__image-wrap">
+                <img src={item.imageUrl} alt="" />
+              </span>
+              <span className="utopia-object-library__copy">
+                <span>{item.title}</span>
+                <span>{item.subtitle}</span>
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </aside>
+  )
+}
+
 type AccountPanelOverlayProps = {
   onClose: () => void
 }
@@ -263,9 +416,32 @@ function AccountPanelOverlay({ onClose }: AccountPanelOverlayProps) {
   )
 }
 
-function UtopiaHomeView() {
+type UtopiaHomeViewProps = {
+  assignments: UtopiaElementAssignments
+  onDropMaterial: (elementId: UtopiaElementId, itemId: LibraryItem['id']) => void
+  onRemoveMaterial: (elementId: UtopiaElementId) => void
+}
+
+function UtopiaHomeView({ assignments, onDropMaterial, onRemoveMaterial }: UtopiaHomeViewProps) {
+  const [openElementMenu, setOpenElementMenu] = useState<UtopiaElementId | null>(null)
+  const [activeDropZone, setActiveDropZone] = useState<UtopiaElementId | null>(null)
+
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setOpenElementMenu(null)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
+
   return (
-    <section className="utopia-home" aria-label="Utopia home" data-node-id="268:210" data-name="utopiahome">
+    <section className="utopia-home" aria-label="Utopia home" data-node-id="268:210" data-name="utopiahome" onClick={() => setOpenElementMenu(null)}>
       <div className="utopia-home__camera-panel" data-node-id="266:136">
         <div className="utopia-home__camera-content" data-node-id="266:137">
           <CameraIcon />
@@ -278,20 +454,95 @@ function UtopiaHomeView() {
 
       <div className="utopia-home__workflow" data-node-id="268:205">
         <div className="utopia-home__elements" data-node-id="266:110">
-          {utopiaElementCards.map((card) => (
-            <article className="utopia-home__element-card" key={card.id}>
-              <img
-                aria-hidden="true"
-                className={`utopia-home__element-icon utopia-home__element-icon--${card.id}`}
-                src={card.iconUrl}
-                alt=""
-              />
-              <div className="utopia-home__element-copy">
-                <h2>{card.title}</h2>
-                <p>{card.description}</p>
-              </div>
+          {utopiaElementCards.map((card) => {
+            const assignedItem = assignments[card.id]
+
+            return (
+            <article
+              className="utopia-home__element-card"
+              data-filled={assignedItem ? 'true' : 'false'}
+              data-drop-active={activeDropZone === card.id}
+              key={card.id}
+              onDragEnter={(event) => {
+                event.preventDefault()
+                setActiveDropZone(card.id)
+              }}
+              onDragOver={(event) => {
+                event.preventDefault()
+                event.dataTransfer.dropEffect = 'copy'
+              }}
+              onDragLeave={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                  setActiveDropZone(null)
+                }
+              }}
+              onDrop={(event) => {
+                event.preventDefault()
+                event.stopPropagation()
+                const droppedItemId = event.dataTransfer.getData('application/x-utopia-library-item') as LibraryItem['id']
+                if (droppedItemId) {
+                  onDropMaterial(card.id, droppedItemId)
+                }
+                setActiveDropZone(null)
+                setOpenElementMenu(null)
+              }}
+            >
+              <button
+                type="button"
+                className="utopia-home__element-trigger"
+                aria-haspopup="menu"
+                aria-expanded={openElementMenu === card.id}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  setOpenElementMenu((currentElement) => (currentElement === card.id ? null : card.id))
+                }}
+              >
+                {assignedItem ? (
+                  <>
+                    <span className="utopia-home__dropped-image-wrap" data-item-id={assignedItem.id}>
+                      <img src={assignedItem.imageUrl} alt="" />
+                    </span>
+                    <span className="utopia-home__dropped-copy">
+                      <span>{assignedItem.title}</span>
+                      <span>{card.title}</span>
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <img
+                      aria-hidden="true"
+                      className={`utopia-home__element-icon utopia-home__element-icon--${card.id}`}
+                      src={card.iconUrl}
+                      alt=""
+                    />
+                    <div className="utopia-home__element-copy">
+                      <h2>{card.title}</h2>
+                      <p>{card.description}</p>
+                    </div>
+                  </>
+                )}
+              </button>
+
+              {assignedItem ? (
+                <button
+                  type="button"
+                  className="utopia-home__remove-material-button"
+                  aria-label={`Remove ${assignedItem.subtitle} from ${card.title}`}
+                  data-node-id="287:959"
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    onRemoveMaterial(card.id)
+                    setOpenElementMenu(null)
+                  }}
+                >
+                  <img aria-hidden="true" src={removeMaterialIconUrl} alt="" />
+                </button>
+              ) : null}
+
+              {openElementMenu === card.id ? <ElementActionMenu elementTitle={card.title} /> : null}
             </article>
-          ))}
+            )
+          })}
         </div>
 
         <button type="button" className="utopia-home__generate-button" data-node-id="266:144">
@@ -305,65 +556,119 @@ function UtopiaHomeView() {
 
 export function UtopiaCollectionScreen() {
   const [isAccountPanelOpen, setIsAccountPanelOpen] = useState(false)
+  const [isObjectLibraryOpen, setIsObjectLibraryOpen] = useState(false)
+  const [draggedLibraryItem, setDraggedLibraryItem] = useState<LibraryItem | null>(null)
+  const [elementAssignments, setElementAssignments] = useState<UtopiaElementAssignments>({})
   const [activeView, setActiveView] = useState<UtopiaView>('collection')
   const switcherLabel = activeView === 'collection' ? 'Collection' : 'Utopia'
   const titleLabel = activeView === 'collection' ? 'Gallery' : 'Hello'
 
+  function handleDropMaterial(elementId: UtopiaElementId, itemId: LibraryItem['id']) {
+    const droppedItem = libraryItems.find((item) => item.id === itemId) ?? draggedLibraryItem
+
+    if (!droppedItem) {
+      return
+    }
+
+    setElementAssignments((currentAssignments) => ({
+      ...currentAssignments,
+      [elementId]: droppedItem,
+    }))
+    setDraggedLibraryItem(null)
+  }
+
+  function handleRemoveMaterial(elementId: UtopiaElementId) {
+    setElementAssignments((currentAssignments) => {
+      const nextAssignments = { ...currentAssignments }
+      delete nextAssignments[elementId]
+      return nextAssignments
+    })
+  }
+
   return (
-    <main className="utopia-collection" data-node-id="3:150" data-name="collectionpage" data-active-view={activeView}>
-      <header className="utopia-collection__header" data-node-id="268:211">
-        <div className="utopia-collection__header-side utopia-collection__header-side--left" data-node-id="268:225">
-          <h1 className="utopia-collection__title" data-node-id="268:300">
-            {titleLabel}
-          </h1>
-          {activeView === 'utopia' ? <HeaderHintIcon /> : null}
-        </div>
+    <main
+      className="utopia-collection"
+      data-node-id="3:150"
+      data-name="collectionpage"
+      data-active-view={activeView}
+      data-library-open={isObjectLibraryOpen}
+    >
+      {activeView === 'utopia' && isObjectLibraryOpen ? <ObjectLibraryPanel onMaterialDragStart={setDraggedLibraryItem} /> : null}
 
-        <div className="utopia-collection__header-center" data-node-id="268:227">
-          <nav className="utopia-collection__switcher" aria-label="Collection navigation" data-node-id="268:213">
+      <div className="utopia-collection__stage">
+        <header className="utopia-collection__header" data-node-id="268:211">
+          <div className="utopia-collection__header-side utopia-collection__header-side--left" data-node-id="268:225">
+            <h1 className="utopia-collection__title" data-node-id="268:300">
+              {titleLabel}
+            </h1>
+            {activeView === 'utopia' ? (
+              <button
+                type="button"
+                className="utopia-collection__header-hint-button"
+                aria-label="Show object library"
+                onClick={() => setIsObjectLibraryOpen(true)}
+              >
+                <HeaderHintIcon />
+              </button>
+            ) : null}
+          </div>
+
+          <div className="utopia-collection__header-center" data-node-id="268:227">
+            <nav className="utopia-collection__switcher" aria-label="Collection navigation" data-node-id="268:213">
+              <button
+                type="button"
+                className="utopia-collection__switcher-button"
+                aria-label="Show Utopia home"
+                onClick={() => {
+                  setActiveView('utopia')
+                  setIsObjectLibraryOpen(false)
+                }}
+              >
+                <ChevronIcon direction="left" />
+              </button>
+              <span className="utopia-collection__switcher-label">{switcherLabel}</span>
+              <button
+                type="button"
+                className="utopia-collection__switcher-button"
+                aria-label="Show collection"
+                onClick={() => {
+                  setActiveView('collection')
+                  setIsObjectLibraryOpen(false)
+                }}
+              >
+                <ChevronIcon direction="right" />
+              </button>
+            </nav>
+          </div>
+
+          <div className="utopia-collection__header-side utopia-collection__header-side--right" data-node-id="268:226">
             <button
               type="button"
-              className="utopia-collection__switcher-button"
-              aria-label="Show Utopia home"
-              onClick={() => setActiveView('utopia')}
+              className="utopia-collection__user-button"
+              aria-label="Open user menu"
+              aria-expanded={isAccountPanelOpen}
+              data-node-id="257:97"
+              onClick={() => setIsAccountPanelOpen(true)}
             >
-              <ChevronIcon direction="left" />
+              Q
             </button>
-            <span className="utopia-collection__switcher-label">{switcherLabel}</span>
-            <button
-              type="button"
-              className="utopia-collection__switcher-button"
-              aria-label="Show collection"
-              onClick={() => setActiveView('collection')}
-            >
-              <ChevronIcon direction="right" />
-            </button>
-          </nav>
-        </div>
+          </div>
+        </header>
 
-        <div className="utopia-collection__header-side utopia-collection__header-side--right" data-node-id="268:226">
-          <button
-            type="button"
-            className="utopia-collection__user-button"
-            aria-label="Open user menu"
-            aria-expanded={isAccountPanelOpen}
-            data-node-id="257:97"
-            onClick={() => setIsAccountPanelOpen(true)}
-          >
-            Q
-          </button>
-        </div>
-      </header>
-
-      {activeView === 'utopia' ? (
-        <UtopiaHomeView />
-      ) : (
-        <section className="utopia-collection__grid" aria-label="Gallery collection" data-node-id="3:155" data-name="GalleryGrid">
-          {galleryItems.map((item) => (
-            <button type="button" className="utopia-collection__paper" aria-label="Open gallery item" key={item.id} />
-          ))}
-        </section>
-      )}
+        {activeView === 'utopia' ? (
+          <UtopiaHomeView
+            assignments={elementAssignments}
+            onDropMaterial={handleDropMaterial}
+            onRemoveMaterial={handleRemoveMaterial}
+          />
+        ) : (
+          <section className="utopia-collection__grid" aria-label="Gallery collection" data-node-id="3:155" data-name="GalleryGrid">
+            {galleryItems.map((item) => (
+              <button type="button" className="utopia-collection__paper" aria-label="Open gallery item" key={item.id} />
+            ))}
+          </section>
+        )}
+      </div>
 
       {isAccountPanelOpen ? <AccountPanelOverlay onClose={() => setIsAccountPanelOpen(false)} /> : null}
     </main>

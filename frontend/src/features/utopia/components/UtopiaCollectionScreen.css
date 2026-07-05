@@ -16,6 +16,23 @@
   overflow: hidden;
 }
 
+.utopia-collection[data-active-view='utopia'][data-library-open='true'] {
+  position: relative;
+  display: block;
+  padding: 26px 37px 28px;
+  background: #ffffff;
+}
+
+.utopia-collection__stage {
+  width: 100%;
+  min-width: 0;
+}
+
+.utopia-collection[data-active-view='utopia'][data-library-open='true'] .utopia-collection__stage {
+  width: 100%;
+  min-width: 0;
+}
+
 .utopia-collection__header {
   display: flex;
   align-items: center;
@@ -66,6 +83,18 @@
   height: 12px;
   color: #b6b6b6;
   flex: 0 0 auto;
+}
+
+.utopia-collection__header-hint-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
 }
 
 .utopia-collection__switcher {
@@ -126,9 +155,12 @@
 }
 
 .utopia-collection__switcher-button:focus-visible,
+.utopia-collection__header-hint-button:focus-visible,
 .utopia-collection__user-button:focus-visible,
 .utopia-collection__paper:focus-visible,
-.utopia-home__generate-button:focus-visible {
+.utopia-home__generate-button:focus-visible,
+.utopia-home__element-trigger:focus-visible,
+.utopia-home__remove-material-button:focus-visible {
   outline: 2px solid rgba(191, 54, 12, 0.38);
   outline-offset: 3px;
 }
@@ -229,16 +261,61 @@
 }
 
 .utopia-home__element-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 25px;
+  position: relative;
   width: 146px;
   height: 171px;
   border: 0.7px solid #dedede;
   border-radius: 12px;
   background: #fdfcfd;
+  overflow: visible;
+}
+
+.utopia-home__element-card[data-drop-active='true'] {
+  border-color: rgba(191, 54, 12, 0.42);
+  box-shadow: 0 0 0 3px rgba(191, 54, 12, 0.08);
+}
+
+.utopia-home__element-trigger {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.utopia-home__element-card[data-filled='true'] .utopia-home__element-trigger {
+  gap: 15px;
+}
+
+.utopia-home__remove-material-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22.79px;
+  height: 22.79px;
+  padding: 1px;
+  border: 1px solid #f0f0f0;
+  border-radius: 11.4px;
+  background: #ffffff;
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+}
+
+.utopia-home__remove-material-button img {
+  width: 11.39px;
+  height: 11.39px;
+  flex: 0 0 auto;
 }
 
 .utopia-home__element-icon {
@@ -300,6 +377,59 @@
   letter-spacing: 0.1px;
 }
 
+.utopia-home__dropped-image-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 90px;
+  height: 90px;
+  flex: 0 0 auto;
+}
+
+.utopia-home__dropped-image-wrap[data-item-id='oak-wood'] {
+  width: 96px;
+  height: 96px;
+}
+
+.utopia-home__dropped-image-wrap[data-item-id='linen-fabric'] {
+  width: 91px;
+  height: 69px;
+  transform: rotate(0.69deg);
+}
+
+.utopia-home__dropped-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.utopia-home__dropped-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  font-family: 'SF Pro', 'SF Pro Text', -apple-system, BlinkMacSystemFont, Inter, Arial, sans-serif;
+  line-height: 1.18;
+  text-align: center;
+}
+
+.utopia-home__dropped-copy span:first-child {
+  width: 100%;
+  color: #000000;
+  font-size: 12px;
+  font-weight: 590;
+  letter-spacing: 0.12px;
+}
+
+.utopia-home__dropped-copy span:last-child {
+  width: 100%;
+  color: #787878;
+  font-size: 14px;
+  font-weight: 510;
+  letter-spacing: 0.14px;
+}
+
 .utopia-home__generate-button {
   display: inline-flex;
   align-items: center;
@@ -325,6 +455,348 @@
   height: 16px;
   flex: 0 0 auto;
   object-fit: contain;
+}
+
+.utopia-collection[data-active-view='utopia'][data-library-open='true'] .utopia-home {
+  width: 100%;
+  margin-left: 0;
+  margin-top: 42px;
+  transform: translateX(150px);
+}
+
+.utopia-element-menu {
+  position: absolute;
+  top: 78px;
+  left: 72px;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 140px;
+  height: 100px;
+  padding: 12px 17px 12px 13px;
+  border: 1px solid #eeeef1;
+  border-radius: 13px;
+  background: #ffffff;
+  box-shadow: 0 4px 12px 3px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.utopia-element-menu__options {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 17px;
+  width: 100%;
+}
+
+.utopia-element-menu__option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 13px;
+  padding: 0;
+  border: 0;
+  color: #000000;
+  background: transparent;
+  font-family: Inter, Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.utopia-element-menu__icon {
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.utopia-element-menu__icon--upload-image {
+  width: 13px;
+  height: 11px;
+}
+
+.utopia-element-menu__icon--take-photo {
+  width: 14px;
+  height: 13px;
+}
+
+.utopia-element-menu__icon--send-phone {
+  width: 9px;
+  height: 16px;
+  margin-left: 2px;
+  margin-right: 3px;
+}
+
+.utopia-element-menu__option:focus-visible {
+  outline: 2px solid rgba(0, 0, 0, 0.18);
+  outline-offset: 3px;
+}
+
+.utopia-object-library {
+  position: absolute;
+  top: 24px;
+  left: 22px;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  width: 333px;
+  height: calc(100svh - 58px);
+  max-height: 733px;
+  padding: 25px 19px;
+  border: 1px solid #ebebeb;
+  border-radius: 11px;
+  background: #ffffff;
+  box-shadow: -2px 13px 35.2px 7px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+}
+
+.utopia-object-library__content {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 26px;
+  min-width: 0;
+}
+
+.utopia-object-library__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.utopia-object-library__header h2 {
+  margin: 0;
+  color: #000000;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.72px;
+  white-space: nowrap;
+}
+
+.utopia-object-library__close-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.utopia-object-library__close-button img {
+  width: 10px;
+  height: 11px;
+}
+
+.utopia-object-library__controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+  width: 100%;
+}
+
+.utopia-object-library__search-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+}
+
+.utopia-object-library__search {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  height: 34px;
+  padding: 0 24px 0 16px;
+  border: 0.7px solid #efefef;
+  border-radius: 24px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.utopia-object-library__search img {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+}
+
+.utopia-object-library__search span {
+  color: #787878;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.44px;
+  white-space: nowrap;
+}
+
+.utopia-object-library__filter-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 9px 8px;
+  border: 0.7px solid #efefef;
+  border-radius: 25px;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.utopia-object-library__filter-button img {
+  width: 11px;
+  height: 11px;
+}
+
+.utopia-object-library__tabs {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  max-width: 100%;
+}
+
+.utopia-object-library__tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: 26px;
+  padding: 2px 0 0;
+  border: 0;
+  border-radius: 27px;
+  color: #787878;
+  background: transparent;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.44px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.utopia-object-library__tab[data-selected='true'] {
+  width: 53px;
+  padding: 2px 4px 0 3px;
+  color: #ffffff;
+  background: #000000;
+  font-weight: 400;
+}
+
+.utopia-object-library__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 134px);
+  gap: 19px 28px;
+  width: 296px;
+}
+
+.utopia-object-library__card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 134px;
+  height: 163px;
+  padding: 0 9px;
+  border: 1px solid #e7e7e7;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  text-align: left;
+  cursor: grab;
+  overflow: hidden;
+}
+
+.utopia-object-library__card:active {
+  cursor: grabbing;
+}
+
+.utopia-object-library__image-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 116px;
+  height: 116px;
+  flex: 0 0 auto;
+}
+
+.utopia-object-library__image-wrap img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.utopia-object-library__card[data-item-id='oak-wood'] .utopia-object-library__image-wrap {
+  width: 116px;
+  height: 116px;
+}
+
+.utopia-object-library__card[data-item-id='andesite-pebble'] .utopia-object-library__image-wrap {
+  width: 120px;
+  height: 120px;
+  margin-bottom: -6px;
+}
+
+.utopia-object-library__card[data-item-id='linen-fabric'] .utopia-object-library__image-wrap {
+  width: 124px;
+  height: 94px;
+  margin-bottom: 22px;
+  transform: rotate(0.69deg);
+}
+
+.utopia-object-library__card[data-item-id='paper-lantern'] .utopia-object-library__image-wrap {
+  width: 109px;
+  height: 109px;
+  margin-inline: auto;
+}
+
+.utopia-object-library__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  font-family: 'SF Pro', 'SF Pro Text', -apple-system, BlinkMacSystemFont, Inter, Arial, sans-serif;
+  font-weight: 590;
+  line-height: 1.12;
+  letter-spacing: 0.12px;
+}
+
+.utopia-object-library__copy span:first-child {
+  color: #000000;
+  font-size: 12px;
+}
+
+.utopia-object-library__copy span:last-child {
+  color: #969696;
+  font-size: 10px;
+  letter-spacing: 0.1px;
+}
+
+.utopia-object-library__card[data-item-id='paper-lantern'] .utopia-object-library__copy {
+  width: 116px;
+  margin-inline: auto;
+  font-size: 10px;
+}
+
+.utopia-object-library__close-button:focus-visible,
+.utopia-object-library__filter-button:focus-visible,
+.utopia-object-library__tab:focus-visible,
+.utopia-object-library__card:focus-visible {
+  outline: 2px solid rgba(0, 0, 0, 0.18);
+  outline-offset: 3px;
 }
 
 .utopia-account-overlay {
@@ -624,6 +1096,11 @@
     padding-bottom: 24px;
   }
 
+  .utopia-collection[data-active-view='utopia'][data-library-open='true'] {
+    gap: 54px;
+    padding: 24px 22px;
+  }
+
   .utopia-home {
     gap: 28px;
     margin-top: 32px;
@@ -635,6 +1112,124 @@
 
   .utopia-home__workflow {
     gap: 22px;
+  }
+
+  .utopia-object-library {
+    flex-basis: 266px;
+    width: 266px;
+    height: 586px;
+    padding: 20px 15px;
+    border-radius: 9px;
+  }
+
+  .utopia-object-library__content {
+    gap: 21px;
+  }
+
+  .utopia-object-library__header h2 {
+    font-size: 14px;
+    letter-spacing: 0.56px;
+  }
+
+  .utopia-object-library__close-button {
+    width: 20px;
+    height: 20px;
+  }
+
+  .utopia-object-library__close-button img {
+    width: 8px;
+    height: 9px;
+  }
+
+  .utopia-object-library__controls {
+    gap: 14px;
+  }
+
+  .utopia-object-library__search-row {
+    gap: 6px;
+  }
+
+  .utopia-object-library__search {
+    height: 27px;
+    padding: 0 19px 0 13px;
+  }
+
+  .utopia-object-library__search img {
+    width: 6px;
+    height: 6px;
+  }
+
+  .utopia-object-library__search span,
+  .utopia-object-library__tab {
+    font-size: 9px;
+    letter-spacing: 0.36px;
+  }
+
+  .utopia-object-library__filter-button {
+    width: 27px;
+    height: 27px;
+    padding: 7px 6px;
+  }
+
+  .utopia-object-library__filter-button img {
+    width: 9px;
+    height: 9px;
+  }
+
+  .utopia-object-library__tabs {
+    gap: 14px;
+  }
+
+  .utopia-object-library__tab {
+    height: 21px;
+  }
+
+  .utopia-object-library__tab[data-selected='true'] {
+    width: 42px;
+  }
+
+  .utopia-object-library__grid {
+    grid-template-columns: repeat(2, 107px);
+    gap: 15px 22px;
+    width: 236px;
+  }
+
+  .utopia-object-library__card {
+    width: 107px;
+    height: 130px;
+    padding: 0 7px;
+    border-radius: 8px;
+  }
+
+  .utopia-object-library__image-wrap,
+  .utopia-object-library__card[data-item-id='oak-wood'] .utopia-object-library__image-wrap {
+    width: 93px;
+    height: 93px;
+  }
+
+  .utopia-object-library__card[data-item-id='andesite-pebble'] .utopia-object-library__image-wrap {
+    width: 96px;
+    height: 96px;
+    margin-bottom: -5px;
+  }
+
+  .utopia-object-library__card[data-item-id='linen-fabric'] .utopia-object-library__image-wrap {
+    width: 99px;
+    height: 75px;
+    margin-bottom: 18px;
+  }
+
+  .utopia-object-library__card[data-item-id='paper-lantern'] .utopia-object-library__image-wrap {
+    width: 87px;
+    height: 87px;
+  }
+
+  .utopia-object-library__copy span:first-child {
+    font-size: 10px;
+  }
+
+  .utopia-object-library__copy span:last-child {
+    font-size: 8px;
   }
 }
 
@@ -686,6 +1281,11 @@
 
   .utopia-home__element-card {
     width: 100%;
+  }
+
+  .utopia-element-menu {
+    left: 50%;
+    transform: translateX(-12px);
   }
 
   .utopia-home__generate-button {
