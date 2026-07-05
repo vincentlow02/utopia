@@ -2,6 +2,11 @@ import { useEffect, useState } from 'react'
 import cameraIconUrl from '../../../assets/icons/utopia/camera.svg'
 import chevronLeftIconUrl from '../../../assets/icons/utopia/chevron-left.svg'
 import chevronRightIconUrl from '../../../assets/icons/utopia/chevron-right.svg'
+import andesiteDetailApplicationIconUrl from '../../../assets/icons/utopia/andesite-detail-application.svg'
+import andesiteDetailBackIconUrl from '../../../assets/icons/utopia/andesite-detail-back.svg'
+import andesiteDetailKeywordsIconUrl from '../../../assets/icons/utopia/andesite-detail-keywords.svg'
+import andesiteDetailSpatialIconUrl from '../../../assets/icons/utopia/andesite-detail-spatial.svg'
+import detailGestureIconUrl from '../../../assets/icons/utopia/detail-gesture.svg'
 import functionIconUrl from '../../../assets/icons/utopia/function.svg'
 import furnitureIconUrl from '../../../assets/icons/utopia/furniture.svg'
 import headerHintIconUrl from '../../../assets/icons/utopia/header-hint.svg'
@@ -11,9 +16,17 @@ import librarySearchIconUrl from '../../../assets/icons/utopia/library-search.sv
 import materialIconUrl from '../../../assets/icons/utopia/material.svg'
 import moodIconUrl from '../../../assets/icons/utopia/mood.svg'
 import naturalIconUrl from '../../../assets/icons/utopia/natural.svg'
+import oakDetailApplicationIconUrl from '../../../assets/icons/utopia/oak-detail-application.svg'
+import oakDetailBackIconUrl from '../../../assets/icons/utopia/oak-detail-back.svg'
+import oakDetailKeywordsIconUrl from '../../../assets/icons/utopia/oak-detail-keywords.svg'
+import oakDetailSpatialIconUrl from '../../../assets/icons/utopia/oak-detail-spatial.svg'
 import removeMaterialIconUrl from '../../../assets/icons/utopia/remove-material.svg'
 import sendPhoneIconUrl from '../../../assets/icons/utopia/send-phone.svg'
 import sparkleIconUrl from '../../../assets/icons/utopia/sparkle.svg'
+import sphereDetailApplicationIconUrl from '../../../assets/icons/utopia/sphere-detail-application.svg'
+import sphereDetailBackIconUrl from '../../../assets/icons/utopia/sphere-detail-back.svg'
+import sphereDetailKeywordsIconUrl from '../../../assets/icons/utopia/sphere-detail-keywords.svg'
+import sphereDetailSpatialIconUrl from '../../../assets/icons/utopia/sphere-detail-spatial.svg'
 import takePhotoIconUrl from '../../../assets/icons/utopia/take-photo.svg'
 import uploadImageIconUrl from '../../../assets/icons/utopia/upload-image.svg'
 import andesitePebbleImageUrl from '../../../assets/images/utopia-library/andesite-pebble.png'
@@ -36,59 +49,721 @@ const languageOptions = [
 ] as const
 
 const utopiaElementCards = [
-  { id: 'function', title: 'Function', description: 'what the space for it', iconUrl: functionIconUrl },
-  { id: 'material', title: 'Material', description: 'what it is made of', iconUrl: materialIconUrl },
-  { id: 'mood', title: 'Mood', description: 'How it feels', iconUrl: moodIconUrl },
-  { id: 'furniture', title: 'Furniture', description: 'How it furnished', iconUrl: furnitureIconUrl },
-  { id: 'natural', title: 'Natural', description: 'How nature appears', iconUrl: naturalIconUrl },
+  { id: 'function', iconUrl: functionIconUrl },
+  { id: 'material', iconUrl: materialIconUrl },
+  { id: 'mood', iconUrl: moodIconUrl },
+  { id: 'furniture', iconUrl: furnitureIconUrl },
+  { id: 'natural', iconUrl: naturalIconUrl },
 ] as const
 
 const elementMenuOptions = [
-  { id: 'upload-image', label: 'Upload Image', iconUrl: uploadImageIconUrl },
-  { id: 'take-photo', label: 'Take Photo', iconUrl: takePhotoIconUrl },
-  { id: 'send-phone', label: 'Send from phone', iconUrl: sendPhoneIconUrl },
+  { id: 'upload-image', iconUrl: uploadImageIconUrl },
+  { id: 'take-photo', iconUrl: takePhotoIconUrl },
+  { id: 'send-phone', iconUrl: sendPhoneIconUrl },
 ] as const
 
-const libraryCategories = ['すべて', '素材', '自然', '形', '質感', 'その他'] as const
+const libraryCategories = ['all', 'material', 'nature', 'form', 'texture', 'other'] as const
 
 const libraryItems = [
   {
     id: 'oak-wood',
-    title: 'オーク材',
     subtitle: 'Oak Wood',
     imageUrl: oakWoodImageUrl,
+    category: 'material',
   },
   {
     id: 'andesite-pebble',
-    title: '安山岩の玉石',
     subtitle: 'Andesite pebble',
     imageUrl: andesitePebbleImageUrl,
+    category: 'nature',
   },
   {
     id: 'sphere',
-    title: '球体',
     subtitle: 'Sphere',
     imageUrl: sphereImageUrl,
+    category: 'form',
   },
   {
     id: 'linen-fabric',
-    title: 'リネン生地',
     subtitle: 'Linen Fabric',
     imageUrl: linenFabricImageUrl,
+    category: 'texture',
   },
   {
     id: 'paper-lantern',
-    title: '和紙',
     subtitle: 'Paper Lantern',
     imageUrl: paperLanternImageUrl,
+    category: 'other',
   },
 ] as const
 
-type LanguageOption = (typeof languageOptions)[number]
+const libraryDetailTotal = 20
+
+type LanguageCode = (typeof languageOptions)[number]['code']
 type LibraryItem = (typeof libraryItems)[number]
+type LibraryItemId = LibraryItem['id']
+type LibraryCategoryId = (typeof libraryCategories)[number]
+type ElementMenuOptionId = (typeof elementMenuOptions)[number]['id']
 type UtopiaElementId = (typeof utopiaElementCards)[number]['id']
 type UtopiaElementAssignments = Partial<Record<UtopiaElementId, LibraryItem>>
 type UtopiaView = 'collection' | 'utopia'
+
+type UtopiaCopy = {
+  pageTitles: Record<UtopiaView, string>
+  views: Record<UtopiaView, string>
+  navigation: {
+    collectionNavigation: string
+    showUtopiaHome: string
+    showCollection: string
+    showObjectLibrary: string
+  }
+  account: {
+    menuLabel: string
+    close: string
+    language: string
+    languageOptions: string
+    about: string
+    help: string
+    logout: string
+    openUserMenu: string
+  }
+  home: {
+    aria: string
+    cameraReady: string
+    cameraInstruction: string
+    generate: string
+    removeMaterialLabel: string
+  }
+  elements: Record<UtopiaElementId, { title: string; description: string }>
+  elementMenu: {
+    ariaSuffix: string
+    options: Record<ElementMenuOptionId, string>
+  }
+  library: {
+    aria: string
+    title: string
+    search: string
+    filter: string
+    detailAria: string
+    detailHint: string
+    categories: Record<LibraryCategoryId, string>
+    detailTags: Record<LibraryItemId, string>
+    items: Record<LibraryItemId, string>
+  }
+}
+
+const translations = {
+  EN: {
+    pageTitles: { collection: 'Gallery', utopia: 'Hello' },
+    views: { collection: 'Collection', utopia: 'Utopia' },
+    navigation: {
+      collectionNavigation: 'Collection navigation',
+      showUtopiaHome: 'Show Utopia home',
+      showCollection: 'Show collection',
+      showObjectLibrary: 'Show object library',
+    },
+    account: {
+      menuLabel: 'Account menu',
+      close: 'Close account menu',
+      language: 'Language',
+      languageOptions: 'Language options',
+      about: 'About Utopia',
+      help: 'Help & Feedback',
+      logout: 'Log out',
+      openUserMenu: 'Open user menu',
+    },
+    home: {
+      aria: 'Utopia home',
+      cameraReady: 'Camera Ready',
+      cameraInstruction: 'Place the object on the disc',
+      generate: 'Generate Image',
+      removeMaterialLabel: 'Remove {item} from {element}',
+    },
+    elements: {
+      function: { title: 'Function', description: 'what the space for it' },
+      material: { title: 'Material', description: 'what it is made of' },
+      mood: { title: 'Mood', description: 'How it feels' },
+      furniture: { title: 'Furniture', description: 'How it furnished' },
+      natural: { title: 'Natural', description: 'How nature appears' },
+    },
+    elementMenu: {
+      ariaSuffix: 'input options',
+      options: {
+        'upload-image': 'Upload Image',
+        'take-photo': 'Take Photo',
+        'send-phone': 'Send from phone',
+      },
+    },
+    library: {
+      aria: 'Object library',
+      title: 'Object Library',
+      search: 'Search',
+      filter: 'Filter object library',
+      detailAria: 'Material details',
+      detailHint: 'Double-click to view details',
+      categories: {
+        all: 'All',
+        material: 'Material',
+        nature: 'Nature',
+        form: 'Form',
+        texture: 'Texture',
+        other: 'Other',
+      },
+      detailTags: {
+        'oak-wood': 'Natural material',
+        'andesite-pebble': 'Natural material',
+        sphere: 'Form',
+        'linen-fabric': 'Texture',
+        'paper-lantern': 'Other',
+      },
+      items: {
+        'oak-wood': 'Oak Wood',
+        'andesite-pebble': 'Andesite Pebble',
+        sphere: 'Sphere',
+        'linen-fabric': 'Linen Fabric',
+        'paper-lantern': 'Paper Lantern',
+      },
+    },
+  },
+  JA: {
+    pageTitles: { collection: 'ギャラリー', utopia: 'こんにちは' },
+    views: { collection: 'コレクション', utopia: 'Utopia' },
+    navigation: {
+      collectionNavigation: 'コレクションナビゲーション',
+      showUtopiaHome: 'Utopia ホームを表示',
+      showCollection: 'コレクションを表示',
+      showObjectLibrary: 'オブジェクトライブラリを表示',
+    },
+    account: {
+      menuLabel: 'アカウントメニュー',
+      close: 'アカウントメニューを閉じる',
+      language: '言語',
+      languageOptions: '言語オプション',
+      about: 'Utopia について',
+      help: 'ヘルプとフィードバック',
+      logout: 'ログアウト',
+      openUserMenu: 'ユーザーメニューを開く',
+    },
+    home: {
+      aria: 'Utopia ホーム',
+      cameraReady: 'Camera Ready',
+      cameraInstruction: '物体を円盤の上に置いてください',
+      generate: '画像を生成',
+      removeMaterialLabel: '{element} から {item} を削除',
+    },
+    elements: {
+      function: { title: 'Function', description: '空間の用途' },
+      material: { title: 'Material', description: '何でできているか' },
+      mood: { title: 'Mood', description: 'どんな感覚か' },
+      furniture: { title: 'Furniture', description: 'どのように備えるか' },
+      natural: { title: 'Natural', description: '自然がどう現れるか' },
+    },
+    elementMenu: {
+      ariaSuffix: '入力オプション',
+      options: {
+        'upload-image': '画像をアップロード',
+        'take-photo': '写真を撮る',
+        'send-phone': 'スマホから送信',
+      },
+    },
+    library: {
+      aria: 'オブジェクトライブラリ',
+      title: 'オブジェクトライブラリ',
+      search: '検索する',
+      filter: 'オブジェクトライブラリを絞り込む',
+      detailAria: '素材の詳細',
+      detailHint: 'ダブルクリックで詳細を見る',
+      categories: {
+        all: 'すべて',
+        material: '素材',
+        nature: '自然',
+        form: '形',
+        texture: '質感',
+        other: 'その他',
+      },
+      detailTags: {
+        'oak-wood': '自然素材',
+        'andesite-pebble': '自然素材',
+        sphere: '形',
+        'linen-fabric': '質感',
+        'paper-lantern': 'ほか',
+      },
+      items: {
+        'oak-wood': 'オーク材',
+        'andesite-pebble': '安山岩の玉石',
+        sphere: '球体',
+        'linen-fabric': 'リネン生地',
+        'paper-lantern': '和紙',
+      },
+    },
+  },
+  SC: {
+    pageTitles: { collection: '档案', utopia: '你好' },
+    views: { collection: '收藏', utopia: 'Utopia' },
+    navigation: {
+      collectionNavigation: '收藏导航',
+      showUtopiaHome: '显示 Utopia 首页',
+      showCollection: '显示收藏',
+      showObjectLibrary: '显示物件库',
+    },
+    account: {
+      menuLabel: '账户菜单',
+      close: '关闭账户菜单',
+      language: '语言',
+      languageOptions: '语言选项',
+      about: '关于 Utopia',
+      help: '帮助与反馈',
+      logout: '退出登录',
+      openUserMenu: '打开用户菜单',
+    },
+    home: {
+      aria: 'Utopia 首页',
+      cameraReady: '相机准备就绪',
+      cameraInstruction: '请将物体放在圆盘上',
+      generate: '生成图像',
+      removeMaterialLabel: '从{element}删除{item}',
+    },
+    elements: {
+      function: { title: '功能', description: '空间的用途' },
+      material: { title: '材质', description: '由什么构成' },
+      mood: { title: '氛围', description: '感受如何' },
+      furniture: { title: '家具', description: '如何布置' },
+      natural: { title: '自然', description: '自然如何出现' },
+    },
+    elementMenu: {
+      ariaSuffix: '输入选项',
+      options: {
+        'upload-image': '上传图片',
+        'take-photo': '拍照',
+        'send-phone': '从手机发送',
+      },
+    },
+    library: {
+      aria: '物件库',
+      title: '物件库',
+      search: '搜索',
+      filter: '筛选物件库',
+      detailAria: '材料详情',
+      detailHint: '双击查看详情',
+      categories: {
+        all: '全部',
+        material: '素材',
+        nature: '自然',
+        form: '形状',
+        texture: '质感',
+        other: '其他',
+      },
+      detailTags: {
+        'oak-wood': '自然素材',
+        'andesite-pebble': '自然素材',
+        sphere: '形状',
+        'linen-fabric': '质感',
+        'paper-lantern': '其他',
+      },
+      items: {
+        'oak-wood': '橡木',
+        'andesite-pebble': '安山岩卵石',
+        sphere: '球体',
+        'linen-fabric': '亚麻布',
+        'paper-lantern': '和纸灯笼',
+      },
+    },
+  },
+  TC: {
+    pageTitles: { collection: '檔案', utopia: '你好' },
+    views: { collection: '收藏', utopia: 'Utopia' },
+    navigation: {
+      collectionNavigation: '收藏導覽',
+      showUtopiaHome: '顯示 Utopia 首頁',
+      showCollection: '顯示收藏',
+      showObjectLibrary: '顯示物件庫',
+    },
+    account: {
+      menuLabel: '帳戶選單',
+      close: '關閉帳戶選單',
+      language: '語言',
+      languageOptions: '語言選項',
+      about: '關於 Utopia',
+      help: '幫助與回饋',
+      logout: '登出',
+      openUserMenu: '開啟使用者選單',
+    },
+    home: {
+      aria: 'Utopia 首頁',
+      cameraReady: '相機準備就緒',
+      cameraInstruction: '請將物體放在圓盤上',
+      generate: '生成圖像',
+      removeMaterialLabel: '從{element}刪除{item}',
+    },
+    elements: {
+      function: { title: '功能', description: '空間的用途' },
+      material: { title: '材質', description: '由什麼構成' },
+      mood: { title: '氛圍', description: '感受如何' },
+      furniture: { title: '家具', description: '如何佈置' },
+      natural: { title: '自然', description: '自然如何出現' },
+    },
+    elementMenu: {
+      ariaSuffix: '輸入選項',
+      options: {
+        'upload-image': '上傳圖片',
+        'take-photo': '拍照',
+        'send-phone': '從手機傳送',
+      },
+    },
+    library: {
+      aria: '物件庫',
+      title: '物件庫',
+      search: '搜尋',
+      filter: '篩選物件庫',
+      detailAria: '材料詳情',
+      detailHint: '雙擊查看詳情',
+      categories: {
+        all: '全部',
+        material: '素材',
+        nature: '自然',
+        form: '形狀',
+        texture: '質感',
+        other: '其他',
+      },
+      detailTags: {
+        'oak-wood': '自然素材',
+        'andesite-pebble': '自然素材',
+        sphere: '形狀',
+        'linen-fabric': '質感',
+        'paper-lantern': '其他',
+      },
+      items: {
+        'oak-wood': '橡木',
+        'andesite-pebble': '安山岩卵石',
+        sphere: '球體',
+        'linen-fabric': '亞麻布',
+        'paper-lantern': '和紙燈籠',
+      },
+    },
+  },
+  TH: {
+    pageTitles: { collection: 'แกลเลอรี', utopia: 'สวัสดี' },
+    views: { collection: 'คอลเลกชัน', utopia: 'Utopia' },
+    navigation: {
+      collectionNavigation: 'การนำทางคอลเลกชัน',
+      showUtopiaHome: 'แสดงหน้าแรก Utopia',
+      showCollection: 'แสดงคอลเลกชัน',
+      showObjectLibrary: 'แสดงคลังวัตถุ',
+    },
+    account: {
+      menuLabel: 'เมนูบัญชี',
+      close: 'ปิดเมนูบัญชี',
+      language: 'ภาษา',
+      languageOptions: 'ตัวเลือกภาษา',
+      about: 'เกี่ยวกับ Utopia',
+      help: 'ความช่วยเหลือและข้อเสนอแนะ',
+      logout: 'ออกจากระบบ',
+      openUserMenu: 'เปิดเมนูผู้ใช้',
+    },
+    home: {
+      aria: 'หน้าแรก Utopia',
+      cameraReady: 'กล้องพร้อมแล้ว',
+      cameraInstruction: 'วางวัตถุไว้บนจานวงกลม',
+      generate: 'สร้างภาพ',
+      removeMaterialLabel: 'ลบ {item} จาก {element}',
+    },
+    elements: {
+      function: { title: 'ฟังก์ชัน', description: 'พื้นที่นี้ใช้ทำอะไร' },
+      material: { title: 'วัสดุ', description: 'ทำมาจากอะไร' },
+      mood: { title: 'อารมณ์', description: 'ให้ความรู้สึกอย่างไร' },
+      furniture: { title: 'เฟอร์นิเจอร์', description: 'จัดวางอย่างไร' },
+      natural: { title: 'ธรรมชาติ', description: 'ธรรมชาติปรากฏอย่างไร' },
+    },
+    elementMenu: {
+      ariaSuffix: 'ตัวเลือกอินพุต',
+      options: {
+        'upload-image': 'อัปโหลดรูปภาพ',
+        'take-photo': 'ถ่ายภาพ',
+        'send-phone': 'ส่งจากโทรศัพท์',
+      },
+    },
+    library: {
+      aria: 'คลังวัตถุ',
+      title: 'คลังวัตถุ',
+      search: 'ค้นหา',
+      filter: 'กรองคลังวัตถุ',
+      detailAria: 'รายละเอียดวัสดุ',
+      detailHint: 'ดับเบิลคลิกเพื่อดูรายละเอียด',
+      categories: {
+        all: 'ทั้งหมด',
+        material: 'วัสดุ',
+        nature: 'ธรรมชาติ',
+        form: 'รูปทรง',
+        texture: 'พื้นผิว',
+        other: 'อื่น ๆ',
+      },
+      detailTags: {
+        'oak-wood': 'วัสดุธรรมชาติ',
+        'andesite-pebble': 'วัสดุธรรมชาติ',
+        sphere: 'รูปทรง',
+        'linen-fabric': 'พื้นผิว',
+        'paper-lantern': 'อื่น ๆ',
+      },
+      items: {
+        'oak-wood': 'ไม้โอ๊ก',
+        'andesite-pebble': 'กรวดแอนดีไซต์',
+        sphere: 'ทรงกลม',
+        'linen-fabric': 'ผ้าลินิน',
+        'paper-lantern': 'โคมกระดาษ',
+      },
+    },
+  },
+} satisfies Record<LanguageCode, UtopiaCopy>
+
+function formatTranslatedLabel(template: string, values: Record<string, string>) {
+  return Object.entries(values).reduce((label, [key, value]) => label.replace(`{${key}}`, value), template)
+}
+
+type OakDetailBackCopy = {
+  back: string
+  materialLabel: string
+  materialValue: string
+  keywordsLabel: string
+  keywords: string[]
+  spatialLabel: string
+  spatial: string[]
+  applicationLabel: string
+  applications: string[]
+  aboutTitle: string
+  aboutBody: string
+}
+
+const oakDetailBackCopies = {
+  EN: {
+    back: 'Back to material card',
+    materialLabel: 'Material',
+    materialValue: 'Natural Wood',
+    keywordsLabel: 'Keywords',
+    keywords: ['Natural', 'Warm', 'Organic'],
+    spatialLabel: 'Spatial Impression',
+    spatial: ['Calm', 'Comfort', 'Minimal'],
+    applicationLabel: 'Typical Application',
+    applications: ['Floor', 'Furniture', 'Wall', 'Ceiling'],
+    aboutTitle: 'About Oak Wood',
+    aboutBody: 'With distinct grain and warm tones, oak wood is suited for creating natural and calm spaces.',
+  },
+  JA: {
+    back: '素材カードに戻る',
+    materialLabel: 'Material',
+    materialValue: 'Natural Wood',
+    keywordsLabel: 'Keywords',
+    keywords: ['Natural', 'Warm', 'Organic'],
+    spatialLabel: 'Spatial Impression',
+    spatial: ['Calm', 'Comfort', 'Minimal'],
+    applicationLabel: 'Typical Application',
+    applications: ['Floor', 'Furniture', 'Wall', 'Ceiling'],
+    aboutTitle: 'About Oak Wood',
+    aboutBody: 'はっきりとした木目と温かみのある色合いを持ち、自然で落ち着いた空間をつくるのに適しています。',
+  },
+  SC: {
+    back: '返回材料卡片',
+    materialLabel: '材料',
+    materialValue: '天然木材',
+    keywordsLabel: '关键词',
+    keywords: ['自然', '温暖', '有机'],
+    spatialLabel: '空间印象',
+    spatial: ['平静', '舒适', '极简'],
+    applicationLabel: '典型应用',
+    applications: ['地板', '家具', '墙面', '天花板'],
+    aboutTitle: '关于橡木',
+    aboutBody: '橡木具有清晰木纹与温暖色调，适合营造自然、安静且舒适的空间。',
+  },
+  TC: {
+    back: '返回材料卡片',
+    materialLabel: '材料',
+    materialValue: '天然木材',
+    keywordsLabel: '關鍵詞',
+    keywords: ['自然', '溫暖', '有機'],
+    spatialLabel: '空間印象',
+    spatial: ['平靜', '舒適', '極簡'],
+    applicationLabel: '典型應用',
+    applications: ['地板', '家具', '牆面', '天花板'],
+    aboutTitle: '關於橡木',
+    aboutBody: '橡木具有清晰木紋與溫暖色調，適合營造自然、安靜且舒適的空間。',
+  },
+  TH: {
+    back: 'กลับไปที่การ์ดวัสดุ',
+    materialLabel: 'วัสดุ',
+    materialValue: 'ไม้ธรรมชาติ',
+    keywordsLabel: 'คำสำคัญ',
+    keywords: ['ธรรมชาติ', 'อบอุ่น', 'ออร์แกนิก'],
+    spatialLabel: 'ความรู้สึกของพื้นที่',
+    spatial: ['สงบ', 'สบาย', 'มินิมัล'],
+    applicationLabel: 'การใช้งานทั่วไป',
+    applications: ['พื้น', 'เฟอร์นิเจอร์', 'ผนัง', 'เพดาน'],
+    aboutTitle: 'เกี่ยวกับไม้โอ๊ก',
+    aboutBody: 'ไม้โอ๊กมีลายไม้ชัดเจนและโทนสีอบอุ่น เหมาะสำหรับสร้างพื้นที่ที่เป็นธรรมชาติและสงบ',
+  },
+} satisfies Record<LanguageCode, OakDetailBackCopy>
+
+const andesiteDetailBackCopies = {
+  EN: {
+    back: 'Back to material card',
+    materialLabel: 'Material',
+    materialValue: 'Andesite Pebble',
+    keywordsLabel: 'Keywords',
+    keywords: ['Natural', 'Solid', 'Organic'],
+    spatialLabel: 'Spatial Impression',
+    spatial: ['Calm', 'Stable', 'Zen'],
+    applicationLabel: 'Typical Application',
+    applications: ['Garden', 'Furniture', 'Entrance', 'Decoration'],
+    aboutTitle: 'About Andestie Pebble',
+    aboutBody: 'With natural roundness and a weighted texture, andesite pebbles are suited for quiet, stable spaces. Used in gardens or near floors, they create a calm natural impression.',
+  },
+  JA: {
+    back: '素材カードに戻る',
+    materialLabel: 'Material',
+    materialValue: 'Andesite Pebble',
+    keywordsLabel: 'Keywords',
+    keywords: ['Natural', 'Solid', 'Organic'],
+    spatialLabel: 'Spatial Impression',
+    spatial: ['Calm', 'Stable', 'Zen'],
+    applicationLabel: 'Typical Application',
+    applications: ['Garden', 'Furniture', 'Entrance', 'Decoration'],
+    aboutTitle: 'About Andestie Pebble',
+    aboutBody: '自然な丸みと重みのある質感を持ち、静かで安定感のある空間をつくるのに適しています。庭や床まわりに取り入れることで、落ち着いた自然の印象を与えます',
+  },
+  SC: {
+    back: '返回材料卡片',
+    materialLabel: '材料',
+    materialValue: '安山岩卵石',
+    keywordsLabel: '关键词',
+    keywords: ['自然', '坚实', '有机'],
+    spatialLabel: '空间印象',
+    spatial: ['平静', '稳定', '禅意'],
+    applicationLabel: '典型应用',
+    applications: ['庭院', '家具', '入口', '装饰'],
+    aboutTitle: '关于安山岩卵石',
+    aboutBody: '安山岩卵石具有自然圆润的形态与沉稳质感，适合营造安静且稳定的空间。用于庭院或地面周边时，会带来沉静的自然印象。',
+  },
+  TC: {
+    back: '返回材料卡片',
+    materialLabel: '材料',
+    materialValue: '安山岩卵石',
+    keywordsLabel: '關鍵詞',
+    keywords: ['自然', '堅實', '有機'],
+    spatialLabel: '空間印象',
+    spatial: ['平靜', '穩定', '禪意'],
+    applicationLabel: '典型應用',
+    applications: ['庭院', '家具', '入口', '裝飾'],
+    aboutTitle: '關於安山岩卵石',
+    aboutBody: '安山岩卵石具有自然圓潤的形態與沉穩質感，適合營造安靜且穩定的空間。用於庭院或地面周邊時，會帶來沉靜的自然印象。',
+  },
+  TH: {
+    back: 'กลับไปที่การ์ดวัสดุ',
+    materialLabel: 'วัสดุ',
+    materialValue: 'กรวดแอนดีไซต์',
+    keywordsLabel: 'คำสำคัญ',
+    keywords: ['ธรรมชาติ', 'มั่นคง', 'ออร์แกนิก'],
+    spatialLabel: 'ความรู้สึกของพื้นที่',
+    spatial: ['สงบ', 'มั่นคง', 'เซน'],
+    applicationLabel: 'การใช้งานทั่วไป',
+    applications: ['สวน', 'เฟอร์นิเจอร์', 'ทางเข้า', 'ของตกแต่ง'],
+    aboutTitle: 'เกี่ยวกับกรวดแอนดีไซต์',
+    aboutBody: 'กรวดแอนดีไซต์มีรูปทรงกลมตามธรรมชาติและสัมผัสที่มีน้ำหนัก เหมาะสำหรับพื้นที่ที่สงบและมั่นคง เมื่อนำไปใช้ในสวนหรือบริเวณพื้น จะให้ความรู้สึกเป็นธรรมชาติที่นิ่งสงบ',
+  },
+} satisfies Record<LanguageCode, OakDetailBackCopy>
+
+const sphereDetailBackCopies = {
+  EN: {
+    back: 'Back to shape card',
+    materialLabel: 'Shape',
+    materialValue: 'Sphere',
+    keywordsLabel: 'Keywords',
+    keywords: ['Round', 'Soft', 'Balanced'],
+    spatialLabel: 'Spatial Impression',
+    spatial: ['Harmony', 'Flow', 'Friendly'],
+    applicationLabel: 'Typical Application',
+    applications: ['Lighting', 'Furniture', 'Sculpture', 'Decoration'],
+    aboutTitle: 'About Sphere',
+    aboutBody: 'A rounded form suggests softness, balance, and harmony. When placed in a space, it creates a calm and approachable atmosphere.',
+  },
+  JA: {
+    back: '形状カードに戻る',
+    materialLabel: 'Shape',
+    materialValue: 'Sphere',
+    keywordsLabel: 'Keywords',
+    keywords: ['Round', 'Soft', 'Balanced'],
+    spatialLabel: 'Spatial Impression',
+    spatial: ['Harmony', 'Flow', 'Friendly'],
+    applicationLabel: 'Typical Application',
+    applications: ['Lighting', 'Furniture', 'Sculpture', 'Decoration'],
+    aboutTitle: 'About Sphere',
+    aboutBody: '丸みのある形状は、柔らかさやバランス、調和を感じさせます。空間に取り入れることで、落ち着きのある親しみやすい雰囲気を演出します。',
+  },
+  SC: {
+    back: '返回形状卡片',
+    materialLabel: '形状',
+    materialValue: '球体',
+    keywordsLabel: '关键词',
+    keywords: ['圆润', '柔和', '平衡'],
+    spatialLabel: '空间印象',
+    spatial: ['和谐', '流动', '亲和'],
+    applicationLabel: '典型应用',
+    applications: ['灯光', '家具', '雕塑', '装饰'],
+    aboutTitle: '关于球体',
+    aboutBody: '圆润的形状会带来柔和、平衡与和谐的感受。放入空间中时，可以营造安静且亲切的氛围。',
+  },
+  TC: {
+    back: '返回形狀卡片',
+    materialLabel: '形狀',
+    materialValue: '球體',
+    keywordsLabel: '關鍵詞',
+    keywords: ['圓潤', '柔和', '平衡'],
+    spatialLabel: '空間印象',
+    spatial: ['和諧', '流動', '親和'],
+    applicationLabel: '典型應用',
+    applications: ['燈光', '家具', '雕塑', '裝飾'],
+    aboutTitle: '關於球體',
+    aboutBody: '圓潤的形狀會帶來柔和、平衡與和諧的感受。放入空間中時，可以營造安靜且親切的氛圍。',
+  },
+  TH: {
+    back: 'กลับไปที่การ์ดรูปทรง',
+    materialLabel: 'รูปทรง',
+    materialValue: 'ทรงกลม',
+    keywordsLabel: 'คำสำคัญ',
+    keywords: ['กลม', 'นุ่มนวล', 'สมดุล'],
+    spatialLabel: 'ความรู้สึกของพื้นที่',
+    spatial: ['กลมกลืน', 'ลื่นไหล', 'เป็นมิตร'],
+    applicationLabel: 'การใช้งานทั่วไป',
+    applications: ['แสงไฟ', 'เฟอร์นิเจอร์', 'ประติมากรรม', 'ของตกแต่ง'],
+    aboutTitle: 'เกี่ยวกับทรงกลม',
+    aboutBody: 'รูปทรงกลมให้ความรู้สึกนุ่มนวล สมดุล และกลมกลืน เมื่อนำไปใช้ในพื้นที่ จะช่วยสร้างบรรยากาศที่สงบและเป็นมิตร',
+  },
+} satisfies Record<LanguageCode, OakDetailBackCopy>
+
+type DetailBackAssets = {
+  applicationIconUrl: string
+  backIconUrl: string
+  keywordsIconUrl: string
+  spatialIconUrl: string
+}
+
+const detailBackAssets: Partial<Record<LibraryItemId, DetailBackAssets>> = {
+  'oak-wood': {
+    applicationIconUrl: oakDetailApplicationIconUrl,
+    backIconUrl: oakDetailBackIconUrl,
+    keywordsIconUrl: oakDetailKeywordsIconUrl,
+    spatialIconUrl: oakDetailSpatialIconUrl,
+  },
+  'andesite-pebble': {
+    applicationIconUrl: andesiteDetailApplicationIconUrl,
+    backIconUrl: andesiteDetailBackIconUrl,
+    keywordsIconUrl: andesiteDetailKeywordsIconUrl,
+    spatialIconUrl: andesiteDetailSpatialIconUrl,
+  },
+  sphere: {
+    applicationIconUrl: sphereDetailApplicationIconUrl,
+    backIconUrl: sphereDetailBackIconUrl,
+    keywordsIconUrl: sphereDetailKeywordsIconUrl,
+    spatialIconUrl: sphereDetailSpatialIconUrl,
+  },
+}
 
 type ChevronIconProps = {
   direction: 'left' | 'right'
@@ -211,11 +886,12 @@ function SparkleIcon() {
 
 type ElementActionMenuProps = {
   elementTitle: string
+  copy: UtopiaCopy
 }
 
-function ElementActionMenu({ elementTitle }: ElementActionMenuProps) {
+function ElementActionMenu({ elementTitle, copy }: ElementActionMenuProps) {
   return (
-    <div className="utopia-element-menu" role="menu" aria-label={`${elementTitle} input options`} data-node-id="266:528" data-name="exportmenu">
+    <div className="utopia-element-menu" role="menu" aria-label={`${elementTitle} ${copy.elementMenu.ariaSuffix}`} data-node-id="266:528" data-name="exportmenu">
       <div className="utopia-element-menu__options" data-node-id="266:529">
         {elementMenuOptions.map((option) => (
           <button type="button" className="utopia-element-menu__option" role="menuitem" key={option.id}>
@@ -225,7 +901,7 @@ function ElementActionMenu({ elementTitle }: ElementActionMenuProps) {
               src={option.iconUrl}
               alt=""
             />
-            <span>{option.label}</span>
+            <span>{copy.elementMenu.options[option.id]}</span>
           </button>
         ))}
       </div>
@@ -234,17 +910,222 @@ function ElementActionMenu({ elementTitle }: ElementActionMenuProps) {
 }
 
 type ObjectLibraryPanelProps = {
+  copy: UtopiaCopy
+  onMaterialSelect: (item: LibraryItem) => void
   onMaterialDragStart: (item: LibraryItem) => void
 }
 
-function ObjectLibraryPanel({ onMaterialDragStart }: ObjectLibraryPanelProps) {
-  const [selectedCategory, setSelectedCategory] = useState<(typeof libraryCategories)[number]>('すべて')
+type LibraryDetailCardProps = {
+  backCopies: Partial<Record<LibraryItemId, OakDetailBackCopy>>
+  copy: UtopiaCopy
+  item: LibraryItem
+  onClose: () => void
+}
+
+type OakDetailBackCardProps = {
+  assets: DetailBackAssets
+  copy: OakDetailBackCopy
+  item: LibraryItem
+  itemTitle: string
+  onBack: () => void
+}
+
+function OakDetailBackCard({ assets, copy, item, itemTitle, onBack }: OakDetailBackCardProps) {
+  return (
+    <aside
+      className="utopia-library-detail-card utopia-library-detail-card--back"
+      role="dialog"
+      aria-modal="true"
+      aria-label={copy.aboutTitle}
+      data-item-id={item.id}
+      data-node-id="275:580"
+      onClick={(event) => event.stopPropagation()}
+    >
+      <div className="utopia-library-detail-back__stack" data-node-id="275:581">
+        <button
+          type="button"
+          className="utopia-library-detail-back__button"
+          aria-label={copy.back}
+          data-node-id="275:582"
+          onClick={onBack}
+        >
+          <img aria-hidden="true" src={assets.backIconUrl} alt="" />
+        </button>
+
+        <div className="utopia-library-detail-back__content" data-node-id="275:584">
+          <section className="utopia-library-detail-back__summary" data-node-id="275:585">
+            <div className="utopia-library-detail-back__material-image">
+              <img src={item.imageUrl} alt="" />
+            </div>
+            <div className="utopia-library-detail-back__summary-copy" data-node-id="275:587">
+              <p data-node-id="275:588">{copy.materialLabel}</p>
+              <p data-node-id="275:589">{copy.materialValue}</p>
+            </div>
+          </section>
+
+          <div className="utopia-library-detail-back__details" data-node-id="275:590">
+            <div className="utopia-library-detail-back__rows" data-node-id="275:591">
+              <DetailBackRow
+                iconUrl={assets.keywordsIconUrl}
+                iconVariant="image"
+                label={copy.keywordsLabel}
+                chips={copy.keywords}
+                nodeId="275:592"
+              />
+              <DetailBackRow
+                iconUrl={assets.spatialIconUrl}
+                iconVariant="boxed"
+                label={copy.spatialLabel}
+                chips={copy.spatial}
+                nodeId="275:606"
+              />
+              <DetailBackRow
+                iconUrl={assets.applicationIconUrl}
+                iconVariant="boxed"
+                label={copy.applicationLabel}
+                chips={copy.applications}
+                isWrapped
+                nodeId="275:620"
+              />
+            </div>
+
+            <section className="utopia-library-detail-back__about" data-node-id="275:636">
+              <h2 data-node-id="275:638">{copy.aboutTitle}</h2>
+              <p data-node-id="275:640">{copy.aboutBody}</p>
+            </section>
+          </div>
+        </div>
+      </div>
+      <span className="utopia-library-detail-back__sr-only">{itemTitle}</span>
+    </aside>
+  )
+}
+
+type DetailBackRowProps = {
+  chips: string[]
+  iconUrl: string
+  iconVariant: 'boxed' | 'image'
+  isWrapped?: boolean
+  label: string
+  nodeId: string
+}
+
+function DetailBackRow({ chips, iconUrl, iconVariant, isWrapped = false, label, nodeId }: DetailBackRowProps) {
+  return (
+    <section className="utopia-library-detail-back__row" data-node-id={nodeId}>
+      <div className="utopia-library-detail-back__icon-box" data-variant={iconVariant}>
+        <img aria-hidden="true" src={iconUrl} alt="" />
+      </div>
+      <div className="utopia-library-detail-back__row-copy">
+        <p>{label}</p>
+        <div className="utopia-library-detail-back__chips" data-wrapped={isWrapped}>
+          {chips.map((chip) => (
+            <span className="utopia-library-detail-back__chip" key={chip}>
+              {chip}
+            </span>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function LibraryDetailCard({ backCopies, copy, item, onClose }: LibraryDetailCardProps) {
+  const [isBackVisible, setIsBackVisible] = useState(false)
+  const itemIndex = libraryItems.findIndex((libraryItem) => libraryItem.id === item.id) + 1
+  const itemTitle = copy.library.items[item.id]
+  const backCopy = backCopies[item.id]
+  const backAssets = detailBackAssets[item.id]
+  const canShowBack = Boolean(backCopy && backAssets)
+
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        onClose()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [onClose])
+
+  useEffect(() => {
+    setIsBackVisible(false)
+  }, [item.id])
 
   return (
-    <aside className="utopia-object-library" aria-label="Object library" data-node-id="286:597">
+    <div className="utopia-library-detail-overlay" role="presentation" onClick={onClose}>
+      {isBackVisible ? (
+        <OakDetailBackCard
+          assets={backAssets as DetailBackAssets}
+          copy={backCopy as OakDetailBackCopy}
+          item={item}
+          itemTitle={itemTitle}
+          onBack={() => setIsBackVisible(false)}
+        />
+      ) : (
+      <aside
+        className="utopia-library-detail-card"
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${copy.library.detailAria}: ${itemTitle}`}
+        data-node-id="275:539"
+        onDoubleClick={() => {
+          if (canShowBack) {
+            setIsBackVisible(true)
+          }
+        }}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="utopia-library-detail-card__inner" data-node-id="275:540">
+          <div className="utopia-library-detail-card__counter" data-node-id="275:541">
+            <span data-node-id="275:542">{itemIndex}/{libraryDetailTotal}</span>
+          </div>
+
+          <div className="utopia-library-detail-card__image" data-item-id={item.id} data-node-id="284:503">
+            <img src={item.imageUrl} alt="" />
+          </div>
+
+          <div className="utopia-library-detail-card__content" data-node-id="275:543">
+            <div className="utopia-library-detail-card__body" data-node-id="275:544">
+              <div className="utopia-library-detail-card__copy" data-node-id="275:545">
+                <div className="utopia-library-detail-card__title-group" data-node-id="275:546">
+                  <p data-node-id="275:547">{itemTitle}</p>
+                  <p data-node-id="275:548">{item.subtitle}</p>
+                </div>
+                <div className="utopia-library-detail-card__tag" data-node-id="275:549">
+                  <span data-node-id="275:550">{copy.library.detailTags[item.id]}</span>
+                </div>
+              </div>
+            </div>
+
+            <footer className="utopia-library-detail-card__footer" data-node-id="275:551">
+              <div className="utopia-library-detail-card__rule" data-node-id="275:552" />
+              <div className="utopia-library-detail-card__hint" data-node-id="275:554">
+                <img aria-hidden="true" src={detailGestureIconUrl} alt="" />
+                <span data-node-id="275:558">{copy.library.detailHint}</span>
+              </div>
+            </footer>
+          </div>
+        </div>
+      </aside>
+      )}
+    </div>
+  )
+}
+
+function ObjectLibraryPanel({ copy, onMaterialSelect, onMaterialDragStart }: ObjectLibraryPanelProps) {
+  const [selectedCategory, setSelectedCategory] = useState<LibraryCategoryId>('all')
+  const [searchQuery, setSearchQuery] = useState('')
+
+  return (
+    <aside className="utopia-object-library" aria-label={copy.library.aria} data-node-id="286:597">
       <div className="utopia-object-library__content" data-node-id="287:842">
         <header className="utopia-object-library__header" data-node-id="286:599">
-          <h2>オブジェクトライブラリ</h2>
+          <h2>{copy.library.title}</h2>
           <span className="utopia-object-library__close-button" aria-hidden="true">
             <img src={libraryCloseIconUrl} alt="" />
           </span>
@@ -252,16 +1133,22 @@ function ObjectLibraryPanel({ onMaterialDragStart }: ObjectLibraryPanelProps) {
 
         <div className="utopia-object-library__controls" data-node-id="286:603">
           <div className="utopia-object-library__search-row" data-node-id="286:604">
-            <label className="utopia-object-library__search" data-node-id="286:605">
+            <div className="utopia-object-library__search" data-node-id="286:605">
               <img aria-hidden="true" src={librarySearchIconUrl} alt="" />
-              <span>検索する</span>
-            </label>
-            <button type="button" className="utopia-object-library__filter-button" aria-label="Filter object library" data-node-id="286:608">
+              <input
+                type="text"
+                placeholder={copy.library.search}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="utopia-object-library__search-input"
+              />
+            </div>
+            <button type="button" className="utopia-object-library__filter-button" aria-label={copy.library.filter} data-node-id="286:608">
               <img aria-hidden="true" src={libraryFilterIconUrl} alt="" />
             </button>
           </div>
 
-          <div className="utopia-object-library__tabs" aria-label="Object categories" data-node-id="286:610">
+          <div className="utopia-object-library__tabs" aria-label={copy.library.aria} data-node-id="286:610">
             {libraryCategories.map((category) => (
               <button
                 type="button"
@@ -270,24 +1157,34 @@ function ObjectLibraryPanel({ onMaterialDragStart }: ObjectLibraryPanelProps) {
                 key={category}
                 onClick={() => setSelectedCategory(category)}
               >
-                {category}
+                {copy.library.categories[category]}
               </button>
             ))}
           </div>
         </div>
 
         <div className="utopia-object-library__grid" data-node-id="287:841">
-          {libraryItems.map((item) => (
+          {libraryItems
+            .filter((item) => selectedCategory === 'all' || item.category === selectedCategory)
+            .filter((item) => {
+              if (!searchQuery) return true
+              const name = copy.library.items[item.id].toLowerCase()
+              const subtitle = item.subtitle.toLowerCase()
+              const q = searchQuery.toLowerCase()
+              return name.includes(q) || subtitle.includes(q)
+            })
+            .map((item) => (
             <button
               type="button"
               className="utopia-object-library__card"
               data-item-id={item.id}
               draggable
               key={item.id}
+              onClick={() => onMaterialSelect(item)}
               onDragStart={(event) => {
                 event.dataTransfer.effectAllowed = 'copy'
                 event.dataTransfer.setData('application/x-utopia-library-item', item.id)
-                event.dataTransfer.setData('text/plain', item.title)
+                event.dataTransfer.setData('text/plain', copy.library.items[item.id])
                 onMaterialDragStart(item)
               }}
             >
@@ -295,7 +1192,7 @@ function ObjectLibraryPanel({ onMaterialDragStart }: ObjectLibraryPanelProps) {
                 <img src={item.imageUrl} alt="" />
               </span>
               <span className="utopia-object-library__copy">
-                <span>{item.title}</span>
+                <span>{copy.library.items[item.id]}</span>
                 <span>{item.subtitle}</span>
               </span>
             </button>
@@ -307,12 +1204,15 @@ function ObjectLibraryPanel({ onMaterialDragStart }: ObjectLibraryPanelProps) {
 }
 
 type AccountPanelOverlayProps = {
+  copy: UtopiaCopy
+  selectedLanguageCode: LanguageCode
   onClose: () => void
+  onLanguageChange: (languageCode: LanguageCode) => void
 }
 
-function AccountPanelOverlay({ onClose }: AccountPanelOverlayProps) {
+function AccountPanelOverlay({ copy, selectedLanguageCode, onClose, onLanguageChange }: AccountPanelOverlayProps) {
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false)
-  const [selectedLanguage, setSelectedLanguage] = useState<LanguageOption>(languageOptions[0])
+  const selectedLanguage = languageOptions.find((language) => language.code === selectedLanguageCode) ?? languageOptions[0]
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -334,13 +1234,13 @@ function AccountPanelOverlay({ onClose }: AccountPanelOverlayProps) {
         className="utopia-account-panel"
         role="dialog"
         aria-modal="true"
-        aria-label="Account menu"
+        aria-label={copy.account.menuLabel}
         data-node-id="255:119"
         data-name="accountpanel"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="utopia-account-panel__close-row" data-node-id="255:120" data-name="closebutton">
-          <button type="button" className="utopia-account-panel__close-button" aria-label="Close account menu" onClick={onClose}>
+          <button type="button" className="utopia-account-panel__close-button" aria-label={copy.account.close} onClick={onClose}>
             <CloseIcon />
           </button>
         </div>
@@ -361,7 +1261,7 @@ function AccountPanelOverlay({ onClose }: AccountPanelOverlayProps) {
           >
             <span className="utopia-account-panel__item-left">
               <GlobeIcon />
-              <span>Language</span>
+              <span>{copy.account.language}</span>
             </span>
             <span className="utopia-account-panel__item-right">
               <span>{selectedLanguage.code}</span>
@@ -371,28 +1271,28 @@ function AccountPanelOverlay({ onClose }: AccountPanelOverlayProps) {
           <button type="button" className="utopia-account-panel__item utopia-account-panel__item--bordered">
             <span className="utopia-account-panel__item-left">
               <BookIcon />
-              <span>About Utopia</span>
+              <span>{copy.account.about}</span>
             </span>
             <ArrowIcon />
           </button>
         </div>
 
         {isLanguageMenuOpen ? (
-          <div className="utopia-language-menu" role="listbox" aria-label="Language options" data-node-id="266:512" data-name="language options">
+          <div className="utopia-language-menu" role="listbox" aria-label={copy.account.languageOptions} data-node-id="266:512" data-name="language options">
             {languageOptions.map((language) => (
               <button
                 type="button"
                 className="utopia-language-menu__option"
                 role="option"
-                aria-selected={language.code === selectedLanguage.code}
+                aria-selected={language.code === selectedLanguageCode}
                 key={language.code}
                 onClick={() => {
-                  setSelectedLanguage(language)
+                  onLanguageChange(language.code)
                   setIsLanguageMenuOpen(false)
                 }}
               >
                 <span>{language.label}</span>
-                {language.code === selectedLanguage.code ? <CheckIcon /> : null}
+                {language.code === selectedLanguageCode ? <CheckIcon /> : null}
               </button>
             ))}
           </div>
@@ -402,14 +1302,14 @@ function AccountPanelOverlay({ onClose }: AccountPanelOverlayProps) {
           <button type="button" className="utopia-account-panel__item">
             <span className="utopia-account-panel__item-left">
               <HelpIcon />
-              <span>{`Help & Feedback`}</span>
+              <span>{copy.account.help}</span>
             </span>
           </button>
         </div>
 
         <button type="button" className="utopia-account-panel__logout" data-node-id="255:184" data-name="logout">
           <LogoutIcon />
-          <span>Log out</span>
+          <span>{copy.account.logout}</span>
         </button>
       </section>
     </div>
@@ -417,12 +1317,13 @@ function AccountPanelOverlay({ onClose }: AccountPanelOverlayProps) {
 }
 
 type UtopiaHomeViewProps = {
+  copy: UtopiaCopy
   assignments: UtopiaElementAssignments
   onDropMaterial: (elementId: UtopiaElementId, itemId: LibraryItem['id']) => void
   onRemoveMaterial: (elementId: UtopiaElementId) => void
 }
 
-function UtopiaHomeView({ assignments, onDropMaterial, onRemoveMaterial }: UtopiaHomeViewProps) {
+function UtopiaHomeView({ copy, assignments, onDropMaterial, onRemoveMaterial }: UtopiaHomeViewProps) {
   const [openElementMenu, setOpenElementMenu] = useState<UtopiaElementId | null>(null)
   const [activeDropZone, setActiveDropZone] = useState<UtopiaElementId | null>(null)
 
@@ -441,13 +1342,13 @@ function UtopiaHomeView({ assignments, onDropMaterial, onRemoveMaterial }: Utopi
   }, [])
 
   return (
-    <section className="utopia-home" aria-label="Utopia home" data-node-id="268:210" data-name="utopiahome" onClick={() => setOpenElementMenu(null)}>
+    <section className="utopia-home" aria-label={copy.home.aria} data-node-id="268:210" data-name="utopiahome" onClick={() => setOpenElementMenu(null)}>
       <div className="utopia-home__camera-panel" data-node-id="266:136">
         <div className="utopia-home__camera-content" data-node-id="266:137">
           <CameraIcon />
           <div className="utopia-home__camera-copy" data-node-id="266:141">
-            <p>Camera Ready</p>
-            <p>物体を円盤の上に置いてください</p>
+            <p>{copy.home.cameraReady}</p>
+            <p>{copy.home.cameraInstruction}</p>
           </div>
         </div>
       </div>
@@ -456,6 +1357,8 @@ function UtopiaHomeView({ assignments, onDropMaterial, onRemoveMaterial }: Utopi
         <div className="utopia-home__elements" data-node-id="266:110">
           {utopiaElementCards.map((card) => {
             const assignedItem = assignments[card.id]
+            const elementCopy = copy.elements[card.id]
+            const assignedItemTitle = assignedItem ? copy.library.items[assignedItem.id] : ''
 
             return (
             <article
@@ -503,8 +1406,8 @@ function UtopiaHomeView({ assignments, onDropMaterial, onRemoveMaterial }: Utopi
                       <img src={assignedItem.imageUrl} alt="" />
                     </span>
                     <span className="utopia-home__dropped-copy">
-                      <span>{assignedItem.title}</span>
-                      <span>{card.title}</span>
+                      <span>{assignedItemTitle}</span>
+                      <span>{elementCopy.title}</span>
                     </span>
                   </>
                 ) : (
@@ -516,8 +1419,8 @@ function UtopiaHomeView({ assignments, onDropMaterial, onRemoveMaterial }: Utopi
                       alt=""
                     />
                     <div className="utopia-home__element-copy">
-                      <h2>{card.title}</h2>
-                      <p>{card.description}</p>
+                      <h2>{elementCopy.title}</h2>
+                      <p>{elementCopy.description}</p>
                     </div>
                   </>
                 )}
@@ -527,7 +1430,10 @@ function UtopiaHomeView({ assignments, onDropMaterial, onRemoveMaterial }: Utopi
                 <button
                   type="button"
                   className="utopia-home__remove-material-button"
-                  aria-label={`Remove ${assignedItem.subtitle} from ${card.title}`}
+                  aria-label={formatTranslatedLabel(copy.home.removeMaterialLabel, {
+                    item: assignedItemTitle,
+                    element: elementCopy.title,
+                  })}
                   data-node-id="287:959"
                   onClick={(event) => {
                     event.stopPropagation()
@@ -539,7 +1445,7 @@ function UtopiaHomeView({ assignments, onDropMaterial, onRemoveMaterial }: Utopi
                 </button>
               ) : null}
 
-              {openElementMenu === card.id ? <ElementActionMenu elementTitle={card.title} /> : null}
+              {openElementMenu === card.id ? <ElementActionMenu copy={copy} elementTitle={elementCopy.title} /> : null}
             </article>
             )
           })}
@@ -547,7 +1453,7 @@ function UtopiaHomeView({ assignments, onDropMaterial, onRemoveMaterial }: Utopi
 
         <button type="button" className="utopia-home__generate-button" data-node-id="266:144">
           <SparkleIcon />
-          <span>Generate Image</span>
+          <span>{copy.home.generate}</span>
         </button>
       </div>
     </section>
@@ -558,10 +1464,18 @@ export function UtopiaCollectionScreen() {
   const [isAccountPanelOpen, setIsAccountPanelOpen] = useState(false)
   const [isObjectLibraryOpen, setIsObjectLibraryOpen] = useState(false)
   const [draggedLibraryItem, setDraggedLibraryItem] = useState<LibraryItem | null>(null)
+  const [selectedLibraryItem, setSelectedLibraryItem] = useState<LibraryItem | null>(null)
   const [elementAssignments, setElementAssignments] = useState<UtopiaElementAssignments>({})
-  const [activeView, setActiveView] = useState<UtopiaView>('collection')
-  const switcherLabel = activeView === 'collection' ? 'Collection' : 'Utopia'
-  const titleLabel = activeView === 'collection' ? 'Gallery' : 'Hello'
+  const [activeView, setActiveView] = useState<UtopiaView>('utopia')
+  const [selectedLanguageCode, setSelectedLanguageCode] = useState<LanguageCode>('EN')
+  const copy = translations[selectedLanguageCode]
+  const materialBackCopies = {
+    'oak-wood': oakDetailBackCopies[selectedLanguageCode],
+    'andesite-pebble': andesiteDetailBackCopies[selectedLanguageCode],
+    sphere: sphereDetailBackCopies[selectedLanguageCode],
+  } satisfies Partial<Record<LibraryItemId, OakDetailBackCopy>>
+  const switcherLabel = copy.views[activeView]
+  const titleLabel = copy.pageTitles[activeView]
 
   function handleDropMaterial(elementId: UtopiaElementId, itemId: LibraryItem['id']) {
     const droppedItem = libraryItems.find((item) => item.id === itemId) ?? draggedLibraryItem
@@ -593,7 +1507,23 @@ export function UtopiaCollectionScreen() {
       data-active-view={activeView}
       data-library-open={isObjectLibraryOpen}
     >
-      {activeView === 'utopia' && isObjectLibraryOpen ? <ObjectLibraryPanel onMaterialDragStart={setDraggedLibraryItem} /> : null}
+      {activeView === 'utopia' && isObjectLibraryOpen ? (
+        <>
+          <ObjectLibraryPanel
+            copy={copy}
+            onMaterialSelect={setSelectedLibraryItem}
+            onMaterialDragStart={setDraggedLibraryItem}
+          />
+          {selectedLibraryItem ? (
+            <LibraryDetailCard
+              backCopies={materialBackCopies}
+              copy={copy}
+              item={selectedLibraryItem}
+              onClose={() => setSelectedLibraryItem(null)}
+            />
+          ) : null}
+        </>
+      ) : null}
 
       <div className="utopia-collection__stage">
         <header className="utopia-collection__header" data-node-id="268:211">
@@ -605,7 +1535,7 @@ export function UtopiaCollectionScreen() {
               <button
                 type="button"
                 className="utopia-collection__header-hint-button"
-                aria-label="Show object library"
+                aria-label={copy.navigation.showObjectLibrary}
                 onClick={() => setIsObjectLibraryOpen(true)}
               >
                 <HeaderHintIcon />
@@ -614,14 +1544,15 @@ export function UtopiaCollectionScreen() {
           </div>
 
           <div className="utopia-collection__header-center" data-node-id="268:227">
-            <nav className="utopia-collection__switcher" aria-label="Collection navigation" data-node-id="268:213">
+            <nav className="utopia-collection__switcher" aria-label={copy.navigation.collectionNavigation} data-node-id="268:213">
               <button
                 type="button"
                 className="utopia-collection__switcher-button"
-                aria-label="Show Utopia home"
+                aria-label={copy.navigation.showUtopiaHome}
                 onClick={() => {
                   setActiveView('utopia')
                   setIsObjectLibraryOpen(false)
+                  setSelectedLibraryItem(null)
                 }}
               >
                 <ChevronIcon direction="left" />
@@ -630,10 +1561,11 @@ export function UtopiaCollectionScreen() {
               <button
                 type="button"
                 className="utopia-collection__switcher-button"
-                aria-label="Show collection"
+                aria-label={copy.navigation.showCollection}
                 onClick={() => {
                   setActiveView('collection')
                   setIsObjectLibraryOpen(false)
+                  setSelectedLibraryItem(null)
                 }}
               >
                 <ChevronIcon direction="right" />
@@ -645,7 +1577,7 @@ export function UtopiaCollectionScreen() {
             <button
               type="button"
               className="utopia-collection__user-button"
-              aria-label="Open user menu"
+              aria-label={copy.account.openUserMenu}
               aria-expanded={isAccountPanelOpen}
               data-node-id="257:97"
               onClick={() => setIsAccountPanelOpen(true)}
@@ -657,6 +1589,7 @@ export function UtopiaCollectionScreen() {
 
         {activeView === 'utopia' ? (
           <UtopiaHomeView
+            copy={copy}
             assignments={elementAssignments}
             onDropMaterial={handleDropMaterial}
             onRemoveMaterial={handleRemoveMaterial}
@@ -670,7 +1603,14 @@ export function UtopiaCollectionScreen() {
         )}
       </div>
 
-      {isAccountPanelOpen ? <AccountPanelOverlay onClose={() => setIsAccountPanelOpen(false)} /> : null}
+      {isAccountPanelOpen ? (
+        <AccountPanelOverlay
+          copy={copy}
+          selectedLanguageCode={selectedLanguageCode}
+          onClose={() => setIsAccountPanelOpen(false)}
+          onLanguageChange={setSelectedLanguageCode}
+        />
+      ) : null}
     </main>
   )
 }
