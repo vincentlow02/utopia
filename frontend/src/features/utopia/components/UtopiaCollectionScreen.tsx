@@ -154,7 +154,7 @@ type UtopiaCopy = {
 
 const translations = {
   EN: {
-    pageTitles: { collection: 'Gallery', utopia: 'Hello' },
+    pageTitles: { collection: 'Gallery', utopia: 'Library' },
     views: { collection: 'Collection', utopia: 'Utopia' },
     navigation: {
       collectionNavigation: 'Collection navigation',
@@ -226,7 +226,7 @@ const translations = {
     },
   },
   JA: {
-    pageTitles: { collection: 'ギャラリー', utopia: 'こんにちは' },
+    pageTitles: { collection: 'ギャラリー', utopia: 'ライブラリ' },
     views: { collection: 'コレクション', utopia: 'Utopia' },
     navigation: {
       collectionNavigation: 'コレクションナビゲーション',
@@ -298,7 +298,7 @@ const translations = {
     },
   },
   SC: {
-    pageTitles: { collection: '档案', utopia: '你好' },
+    pageTitles: { collection: '档案', utopia: '物件库' },
     views: { collection: '收藏', utopia: 'Utopia' },
     navigation: {
       collectionNavigation: '收藏导航',
@@ -370,7 +370,7 @@ const translations = {
     },
   },
   TC: {
-    pageTitles: { collection: '檔案', utopia: '你好' },
+    pageTitles: { collection: '檔案', utopia: '物件庫' },
     views: { collection: '收藏', utopia: 'Utopia' },
     navigation: {
       collectionNavigation: '收藏導覽',
@@ -442,7 +442,7 @@ const translations = {
     },
   },
   TH: {
-    pageTitles: { collection: 'แกลเลอรี', utopia: 'สวัสดี' },
+    pageTitles: { collection: 'แกลเลอรี', utopia: 'คลังวัตถุ' },
     views: { collection: 'คอลเลกชัน', utopia: 'Utopia' },
     navigation: {
       collectionNavigation: 'การนำทางคอลเลกชัน',
