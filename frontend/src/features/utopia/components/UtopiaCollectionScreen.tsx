@@ -13,6 +13,10 @@ import headerHintIconUrl from '../../../assets/icons/utopia/header-hint.svg'
 import libraryCloseIconUrl from '../../../assets/icons/utopia/library-close.svg'
 import libraryFilterIconUrl from '../../../assets/icons/utopia/library-filter.svg'
 import librarySearchIconUrl from '../../../assets/icons/utopia/library-search.svg'
+import linenDetailApplicationIconUrl from '../../../assets/icons/utopia/linen-detail-application.svg'
+import linenDetailBackIconUrl from '../../../assets/icons/utopia/linen-detail-back.svg'
+import linenDetailKeywordsIconUrl from '../../../assets/icons/utopia/linen-detail-keywords.svg'
+import linenDetailSpatialIconUrl from '../../../assets/icons/utopia/linen-detail-spatial.svg'
 import materialIconUrl from '../../../assets/icons/utopia/material.svg'
 import moodIconUrl from '../../../assets/icons/utopia/mood.svg'
 import naturalIconUrl from '../../../assets/icons/utopia/natural.svg'
@@ -20,6 +24,10 @@ import oakDetailApplicationIconUrl from '../../../assets/icons/utopia/oak-detail
 import oakDetailBackIconUrl from '../../../assets/icons/utopia/oak-detail-back.svg'
 import oakDetailKeywordsIconUrl from '../../../assets/icons/utopia/oak-detail-keywords.svg'
 import oakDetailSpatialIconUrl from '../../../assets/icons/utopia/oak-detail-spatial.svg'
+import paperDetailApplicationIconUrl from '../../../assets/icons/utopia/paper-detail-application.svg'
+import paperDetailBackIconUrl from '../../../assets/icons/utopia/paper-detail-back.svg'
+import paperDetailKeywordsIconUrl from '../../../assets/icons/utopia/paper-detail-keywords.svg'
+import paperDetailSpatialIconUrl from '../../../assets/icons/utopia/paper-detail-spatial.svg'
 import removeMaterialIconUrl from '../../../assets/icons/utopia/remove-material.svg'
 import sendPhoneIconUrl from '../../../assets/icons/utopia/send-phone.svg'
 import sparkleIconUrl from '../../../assets/icons/utopia/sparkle.svg'
@@ -29,11 +37,18 @@ import sphereDetailKeywordsIconUrl from '../../../assets/icons/utopia/sphere-det
 import sphereDetailSpatialIconUrl from '../../../assets/icons/utopia/sphere-detail-spatial.svg'
 import takePhotoIconUrl from '../../../assets/icons/utopia/take-photo.svg'
 import uploadImageIconUrl from '../../../assets/icons/utopia/upload-image.svg'
-import andesitePebbleImageUrl from '../../../assets/images/utopia-library/andesite-pebble.png'
-import linenFabricImageUrl from '../../../assets/images/utopia-library/linen-fabric.png'
-import oakWoodImageUrl from '../../../assets/images/utopia-library/oak-wood.png'
-import paperLanternImageUrl from '../../../assets/images/utopia-library/paper-lantern.png'
-import sphereImageUrl from '../../../assets/images/utopia-library/sphere.png'
+import { libraryCategories, materialsById, utopiaMaterials } from '../data/materials'
+import { utopiaThemeDefinitions } from '../data/themes'
+import { buildUtopiaPrompt } from '../prompt/buildUtopiaPrompt'
+import type {
+  LibraryCategoryId,
+  MaterialId,
+  MaterialMetadata,
+  PromptBuildResult,
+  UtopiaThemeAssignments,
+  UtopiaThemeCardId,
+  UtopiaThemeId,
+} from '../types'
 import './UtopiaCollectionScreen.css'
 
 const galleryItems = Array.from({ length: 10 }, (_, index) => ({
@@ -48,13 +63,18 @@ const languageOptions = [
   { code: 'TH', label: 'ไทย' },
 ] as const
 
-const utopiaElementCards = [
-  { id: 'function', iconUrl: functionIconUrl },
-  { id: 'material', iconUrl: materialIconUrl },
-  { id: 'mood', iconUrl: moodIconUrl },
-  { id: 'furniture', iconUrl: furnitureIconUrl },
-  { id: 'natural', iconUrl: naturalIconUrl },
-] as const
+const themeIconUrls = {
+  function: functionIconUrl,
+  material: materialIconUrl,
+  atmosphere: moodIconUrl,
+  furniture: furnitureIconUrl,
+  nature: naturalIconUrl,
+} satisfies Record<UtopiaThemeId, string>
+
+const utopiaElementCards = utopiaThemeDefinitions.map((theme) => ({
+  ...theme,
+  iconUrl: themeIconUrls[theme.id],
+}))
 
 const elementMenuOptions = [
   { id: 'upload-image', iconUrl: uploadImageIconUrl },
@@ -62,50 +82,14 @@ const elementMenuOptions = [
   { id: 'send-phone', iconUrl: sendPhoneIconUrl },
 ] as const
 
-const libraryCategories = ['all', 'material', 'nature', 'form', 'texture', 'other'] as const
-
-const libraryItems = [
-  {
-    id: 'oak-wood',
-    subtitle: 'Oak Wood',
-    imageUrl: oakWoodImageUrl,
-    category: 'material',
-  },
-  {
-    id: 'andesite-pebble',
-    subtitle: 'Andesite pebble',
-    imageUrl: andesitePebbleImageUrl,
-    category: 'nature',
-  },
-  {
-    id: 'sphere',
-    subtitle: 'Sphere',
-    imageUrl: sphereImageUrl,
-    category: 'form',
-  },
-  {
-    id: 'linen-fabric',
-    subtitle: 'Linen Fabric',
-    imageUrl: linenFabricImageUrl,
-    category: 'texture',
-  },
-  {
-    id: 'paper-lantern',
-    subtitle: 'Paper Lantern',
-    imageUrl: paperLanternImageUrl,
-    category: 'other',
-  },
-] as const
+const libraryItems = utopiaMaterials
 
 const libraryDetailTotal = 20
 
 type LanguageCode = (typeof languageOptions)[number]['code']
-type LibraryItem = (typeof libraryItems)[number]
-type LibraryItemId = LibraryItem['id']
-type LibraryCategoryId = (typeof libraryCategories)[number]
+type LibraryItem = MaterialMetadata
+type LibraryItemId = MaterialId
 type ElementMenuOptionId = (typeof elementMenuOptions)[number]['id']
-type UtopiaElementId = (typeof utopiaElementCards)[number]['id']
-type UtopiaElementAssignments = Partial<Record<UtopiaElementId, LibraryItem>>
 type UtopiaView = 'collection' | 'utopia'
 
 type UtopiaCopy = {
@@ -134,7 +118,7 @@ type UtopiaCopy = {
     generate: string
     removeMaterialLabel: string
   }
-  elements: Record<UtopiaElementId, { title: string; description: string }>
+  elements: Record<UtopiaThemeCardId, { title: string; description: string }>
   elementMenu: {
     ariaSuffix: string
     options: Record<ElementMenuOptionId, string>
@@ -737,6 +721,142 @@ const sphereDetailBackCopies = {
   },
 } satisfies Record<LanguageCode, OakDetailBackCopy>
 
+const linenFabricDetailBackCopies = {
+  EN: {
+    back: 'Back to texture card',
+    materialLabel: 'Texture',
+    materialValue: 'Linen Fabric',
+    keywordsLabel: 'Keywords',
+    keywords: ['Natural', 'Soft', 'Woven'],
+    spatialLabel: 'Spatial Impression',
+    spatial: ['Cozy', 'Relaxing', 'Warm'],
+    applicationLabel: 'Typical Application',
+    applications: ['Sofa', 'Curtain', 'Cushion', 'Bedding'],
+    aboutTitle: 'About Linen Fabric',
+    aboutBody: 'With a natural woven texture and a soft touch, linen fabric creates a warm, calm, and comfortable space.',
+  },
+  JA: {
+    back: '質感カードに戻る',
+    materialLabel: '質感',
+    materialValue: 'リネン生地',
+    keywordsLabel: 'キーワード',
+    keywords: ['自然', '柔らかい', '織り'],
+    spatialLabel: '空間印象',
+    spatial: ['居心地よい', 'リラックス', '温かい'],
+    applicationLabel: '主な用途',
+    applications: ['ソファ', 'カーテン', 'クッション', '寝具'],
+    aboutTitle: 'リネン生地について',
+    aboutBody: '自然な織り目と柔らかな手触りを持ち、温かく落ち着いた居心地のよい空間を演出します。',
+  },
+  SC: {
+    back: '返回质感卡片',
+    materialLabel: '质感',
+    materialValue: '亚麻布',
+    keywordsLabel: '关键词',
+    keywords: ['自然', '柔软', '编织'],
+    spatialLabel: '空间印象',
+    spatial: ['舒适', '放松', '温暖'],
+    applicationLabel: '典型应用',
+    applications: ['沙发', '窗帘', '靠垫', '床品'],
+    aboutTitle: '关于亚麻布',
+    aboutBody: '亚麻布具有自然织纹与柔软触感，适合营造温暖、安静且舒适的空间氛围。',
+  },
+  TC: {
+    back: '返回質感卡片',
+    materialLabel: '質感',
+    materialValue: '亞麻布',
+    keywordsLabel: '關鍵詞',
+    keywords: ['自然', '柔軟', '編織'],
+    spatialLabel: '空間印象',
+    spatial: ['舒適', '放鬆', '溫暖'],
+    applicationLabel: '典型應用',
+    applications: ['沙發', '窗簾', '靠墊', '床品'],
+    aboutTitle: '關於亞麻布',
+    aboutBody: '亞麻布具有自然織紋與柔軟觸感，適合營造溫暖、安靜且舒適的空間氛圍。',
+  },
+  TH: {
+    back: 'กลับไปที่การ์ดพื้นผิว',
+    materialLabel: 'พื้นผิว',
+    materialValue: 'ผ้าลินิน',
+    keywordsLabel: 'คำสำคัญ',
+    keywords: ['ธรรมชาติ', 'นุ่ม', 'ทอ'],
+    spatialLabel: 'ความรู้สึกของพื้นที่',
+    spatial: ['อบอุ่น', 'ผ่อนคลาย', 'อุ่นสบาย'],
+    applicationLabel: 'การใช้งานทั่วไป',
+    applications: ['โซฟา', 'ผ้าม่าน', 'หมอนอิง', 'เครื่องนอน'],
+    aboutTitle: 'เกี่ยวกับผ้าลินิน',
+    aboutBody: 'ผ้าลินินมีลายทอตามธรรมชาติและสัมผัสที่นุ่ม เหมาะสำหรับสร้างพื้นที่ที่อบอุ่น สงบ และน่าอยู่',
+  },
+} satisfies Record<LanguageCode, OakDetailBackCopy>
+
+const paperLanternDetailBackCopies = {
+  EN: {
+    back: 'Back to other card',
+    materialLabel: 'Other',
+    materialValue: 'Paper Lantern',
+    keywordsLabel: 'Keywords',
+    keywords: ['Japan', 'Warm Light', 'Traditional'],
+    spatialLabel: 'Spatial Impression',
+    spatial: ['Soft', 'Calm', 'Intimate'],
+    applicationLabel: 'Typical Application',
+    applications: ['Lighting', 'Decoration', 'Corner', 'Entrance'],
+    aboutTitle: 'About Paper Lantern',
+    aboutBody: 'Paper lanterns cast a soft glow through washi paper, creating a quiet and warm space. They add a Japanese impression and a calm atmosphere.',
+  },
+  JA: {
+    back: 'その他カードに戻る',
+    materialLabel: 'ほか',
+    materialValue: '和紙灯籠',
+    keywordsLabel: 'キーワード',
+    keywords: ['日本', '温かい光', '伝統的'],
+    spatialLabel: '空間印象',
+    spatial: ['柔らかい', '静か', '親密'],
+    applicationLabel: '主な用途',
+    applications: ['照明', '装飾', '隅', '入口'],
+    aboutTitle: '和紙灯籠について',
+    aboutBody: '和紙を通した柔らかな光を持ち、静かで温かみのある空間を演出します。日本的な印象や落ち着いた雰囲気を加える要素として適しています。',
+  },
+  SC: {
+    back: '返回其他卡片',
+    materialLabel: '其他',
+    materialValue: '和纸灯笼',
+    keywordsLabel: '关键词',
+    keywords: ['日本', '暖光', '传统'],
+    spatialLabel: '空间印象',
+    spatial: ['柔和', '平静', '亲密'],
+    applicationLabel: '典型应用',
+    applications: ['照明', '装饰', '角落', '入口'],
+    aboutTitle: '关于和纸灯笼',
+    aboutBody: '和纸灯笼透出柔和光线，适合营造安静、温暖的空间。它也能为空间加入日式印象与沉静氛围。',
+  },
+  TC: {
+    back: '返回其他卡片',
+    materialLabel: '其他',
+    materialValue: '和紙燈籠',
+    keywordsLabel: '關鍵詞',
+    keywords: ['日本', '暖光', '傳統'],
+    spatialLabel: '空間印象',
+    spatial: ['柔和', '平靜', '親密'],
+    applicationLabel: '典型應用',
+    applications: ['照明', '裝飾', '角落', '入口'],
+    aboutTitle: '關於和紙燈籠',
+    aboutBody: '和紙燈籠透出柔和光線，適合營造安靜、溫暖的空間。它也能為空間加入日式印象與沉靜氛圍。',
+  },
+  TH: {
+    back: 'กลับไปที่การ์ดอื่น ๆ',
+    materialLabel: 'อื่น ๆ',
+    materialValue: 'โคมกระดาษ',
+    keywordsLabel: 'คำสำคัญ',
+    keywords: ['ญี่ปุ่น', 'แสงอบอุ่น', 'ดั้งเดิม'],
+    spatialLabel: 'ความรู้สึกของพื้นที่',
+    spatial: ['นุ่มนวล', 'สงบ', 'ใกล้ชิด'],
+    applicationLabel: 'การใช้งานทั่วไป',
+    applications: ['แสงไฟ', 'ของตกแต่ง', 'มุมห้อง', 'ทางเข้า'],
+    aboutTitle: 'เกี่ยวกับโคมกระดาษ',
+    aboutBody: 'โคมกระดาษให้แสงนุ่มผ่านกระดาษ สร้างพื้นที่ที่เงียบและอบอุ่น เหมาะสำหรับเพิ่มกลิ่นอายแบบญี่ปุ่นและบรรยากาศสงบ',
+  },
+} satisfies Record<LanguageCode, OakDetailBackCopy>
+
 type DetailBackAssets = {
   applicationIconUrl: string
   backIconUrl: string
@@ -762,6 +882,18 @@ const detailBackAssets: Partial<Record<LibraryItemId, DetailBackAssets>> = {
     backIconUrl: sphereDetailBackIconUrl,
     keywordsIconUrl: sphereDetailKeywordsIconUrl,
     spatialIconUrl: sphereDetailSpatialIconUrl,
+  },
+  'linen-fabric': {
+    applicationIconUrl: linenDetailApplicationIconUrl,
+    backIconUrl: linenDetailBackIconUrl,
+    keywordsIconUrl: linenDetailKeywordsIconUrl,
+    spatialIconUrl: linenDetailSpatialIconUrl,
+  },
+  'paper-lantern': {
+    applicationIconUrl: paperDetailApplicationIconUrl,
+    backIconUrl: paperDetailBackIconUrl,
+    keywordsIconUrl: paperDetailKeywordsIconUrl,
+    spatialIconUrl: paperDetailSpatialIconUrl,
   },
 }
 
@@ -1095,7 +1227,7 @@ function LibraryDetailCard({ backCopies, copy, item, onClose }: LibraryDetailCar
               <div className="utopia-library-detail-card__copy" data-node-id="275:545">
                 <div className="utopia-library-detail-card__title-group" data-node-id="275:546">
                   <p data-node-id="275:547">{itemTitle}</p>
-                  <p data-node-id="275:548">{item.subtitle}</p>
+                  <p data-node-id="275:548">{item.name}</p>
                 </div>
                 <div className="utopia-library-detail-card__tag" data-node-id="275:549">
                   <span data-node-id="275:550">{copy.library.detailTags[item.id]}</span>
@@ -1175,7 +1307,7 @@ function ObjectLibraryPanel({ copy, onClose, onMaterialSelect, onMaterialDragSta
             .filter((item) => {
               if (!searchQuery) return true
               const name = copy.library.items[item.id].toLowerCase()
-              const subtitle = item.subtitle.toLowerCase()
+              const subtitle = item.name.toLowerCase()
               const q = searchQuery.toLowerCase()
               return name.includes(q) || subtitle.includes(q)
             })
@@ -1199,7 +1331,7 @@ function ObjectLibraryPanel({ copy, onClose, onMaterialSelect, onMaterialDragSta
               </span>
               <span className="utopia-object-library__copy">
                 <span>{copy.library.items[item.id]}</span>
-                <span>{item.subtitle}</span>
+                <span>{item.name}</span>
               </span>
             </button>
           ))}
@@ -1324,14 +1456,25 @@ function AccountPanelOverlay({ copy, selectedLanguageCode, onClose, onLanguageCh
 
 type UtopiaHomeViewProps = {
   copy: UtopiaCopy
-  assignments: UtopiaElementAssignments
-  onDropMaterial: (elementId: UtopiaElementId, itemId: LibraryItem['id']) => void
-  onRemoveMaterial: (elementId: UtopiaElementId) => void
+  assignments: UtopiaThemeAssignments
+  generatedPrompt: string
+  generatedThemeSections: PromptBuildResult['themeSections']
+  onGeneratePrompt: () => void
+  onDropMaterial: (themeId: UtopiaThemeId, itemId: MaterialId) => void
+  onRemoveMaterial: (themeId: UtopiaThemeId) => void
 }
 
-function UtopiaHomeView({ copy, assignments, onDropMaterial, onRemoveMaterial }: UtopiaHomeViewProps) {
-  const [openElementMenu, setOpenElementMenu] = useState<UtopiaElementId | null>(null)
-  const [activeDropZone, setActiveDropZone] = useState<UtopiaElementId | null>(null)
+function UtopiaHomeView({
+  assignments,
+  copy,
+  generatedPrompt,
+  generatedThemeSections,
+  onDropMaterial,
+  onGeneratePrompt,
+  onRemoveMaterial,
+}: UtopiaHomeViewProps) {
+  const [openElementMenu, setOpenElementMenu] = useState<UtopiaThemeId | null>(null)
+  const [activeDropZone, setActiveDropZone] = useState<UtopiaThemeId | null>(null)
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -1357,13 +1500,33 @@ function UtopiaHomeView({ copy, assignments, onDropMaterial, onRemoveMaterial }:
             <p>{copy.home.cameraInstruction}</p>
           </div>
         </div>
+        {generatedPrompt ? (
+          <section className="utopia-home__prompt-debug" aria-label="Generated prompt preview">
+            <div className="utopia-home__prompt-debug-header">
+              <span>Prompt Preview</span>
+              <span>{generatedThemeSections.length ? `${generatedThemeSections.length} theme cues` : 'Base fallback'}</span>
+            </div>
+            {generatedThemeSections.length ? (
+              <ul className="utopia-home__prompt-sections">
+                {generatedThemeSections.map((section) => (
+                  <li key={`${section.themeId}-${section.materialId}`}>
+                    <span>{section.themeId}</span>
+                    <p>{section.text}</p>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            <p className="utopia-home__prompt-text">{generatedPrompt}</p>
+          </section>
+        ) : null}
       </div>
 
       <div className="utopia-home__workflow" data-node-id="268:205">
         <div className="utopia-home__elements" data-node-id="266:110">
           {utopiaElementCards.map((card) => {
-            const assignedItem = assignments[card.id]
-            const elementCopy = copy.elements[card.id]
+            const assignedMaterialId = assignments[card.id]
+            const assignedItem = assignedMaterialId ? materialsById[assignedMaterialId] : undefined
+            const elementCopy = copy.elements[card.cardId]
             const assignedItemTitle = assignedItem ? copy.library.items[assignedItem.id] : ''
 
             return (
@@ -1388,7 +1551,7 @@ function UtopiaHomeView({ copy, assignments, onDropMaterial, onRemoveMaterial }:
               onDrop={(event) => {
                 event.preventDefault()
                 event.stopPropagation()
-                const droppedItemId = event.dataTransfer.getData('application/x-utopia-library-item') as LibraryItem['id']
+                const droppedItemId = event.dataTransfer.getData('application/x-utopia-library-item') as MaterialId
                 if (droppedItemId) {
                   onDropMaterial(card.id, droppedItemId)
                 }
@@ -1420,7 +1583,7 @@ function UtopiaHomeView({ copy, assignments, onDropMaterial, onRemoveMaterial }:
                   <>
                     <img
                       aria-hidden="true"
-                      className={`utopia-home__element-icon utopia-home__element-icon--${card.id}`}
+                      className={`utopia-home__element-icon utopia-home__element-icon--${card.cardId}`}
                       src={card.iconUrl}
                       alt=""
                     />
@@ -1457,7 +1620,7 @@ function UtopiaHomeView({ copy, assignments, onDropMaterial, onRemoveMaterial }:
           })}
         </div>
 
-        <button type="button" className="utopia-home__generate-button" data-node-id="266:144">
+        <button type="button" className="utopia-home__generate-button" data-node-id="266:144" onClick={onGeneratePrompt}>
           <SparkleIcon />
           <span>{copy.home.generate}</span>
         </button>
@@ -1471,7 +1634,9 @@ export function UtopiaCollectionScreen() {
   const [isObjectLibraryOpen, setIsObjectLibraryOpen] = useState(false)
   const [draggedLibraryItem, setDraggedLibraryItem] = useState<LibraryItem | null>(null)
   const [selectedLibraryItem, setSelectedLibraryItem] = useState<LibraryItem | null>(null)
-  const [elementAssignments, setElementAssignments] = useState<UtopiaElementAssignments>({})
+  const [themeAssignments, setThemeAssignments] = useState<UtopiaThemeAssignments>({})
+  const [generatedPrompt, setGeneratedPrompt] = useState('')
+  const [generatedThemeSections, setGeneratedThemeSections] = useState<PromptBuildResult['themeSections']>([])
   const [activeView, setActiveView] = useState<UtopiaView>('utopia')
   const [selectedLanguageCode, setSelectedLanguageCode] = useState<LanguageCode>('EN')
   const copy = translations[selectedLanguageCode]
@@ -1479,30 +1644,38 @@ export function UtopiaCollectionScreen() {
     'oak-wood': oakDetailBackCopies[selectedLanguageCode],
     'andesite-pebble': andesiteDetailBackCopies[selectedLanguageCode],
     sphere: sphereDetailBackCopies[selectedLanguageCode],
+    'linen-fabric': linenFabricDetailBackCopies[selectedLanguageCode],
+    'paper-lantern': paperLanternDetailBackCopies[selectedLanguageCode],
   } satisfies Partial<Record<LibraryItemId, OakDetailBackCopy>>
   const switcherLabel = copy.views[activeView]
   const titleLabel = copy.pageTitles[activeView]
 
-  function handleDropMaterial(elementId: UtopiaElementId, itemId: LibraryItem['id']) {
-    const droppedItem = libraryItems.find((item) => item.id === itemId) ?? draggedLibraryItem
+  function handleDropMaterial(themeId: UtopiaThemeId, itemId: MaterialId) {
+    const droppedMaterial = materialsById[itemId] ?? draggedLibraryItem
 
-    if (!droppedItem) {
+    if (!droppedMaterial) {
       return
     }
 
-    setElementAssignments((currentAssignments) => ({
+    setThemeAssignments((currentAssignments) => ({
       ...currentAssignments,
-      [elementId]: droppedItem,
+      [themeId]: droppedMaterial.id,
     }))
     setDraggedLibraryItem(null)
   }
 
-  function handleRemoveMaterial(elementId: UtopiaElementId) {
-    setElementAssignments((currentAssignments) => {
+  function handleRemoveMaterial(themeId: UtopiaThemeId) {
+    setThemeAssignments((currentAssignments) => {
       const nextAssignments = { ...currentAssignments }
-      delete nextAssignments[elementId]
+      delete nextAssignments[themeId]
       return nextAssignments
     })
+  }
+
+  function handleGeneratePrompt() {
+    const promptResult = buildUtopiaPrompt(themeAssignments)
+    setGeneratedPrompt(promptResult.promptText)
+    setGeneratedThemeSections(promptResult.themeSections)
   }
 
   return (
@@ -1597,7 +1770,10 @@ export function UtopiaCollectionScreen() {
         {activeView === 'utopia' ? (
           <UtopiaHomeView
             copy={copy}
-            assignments={elementAssignments}
+            assignments={themeAssignments}
+            generatedPrompt={generatedPrompt}
+            generatedThemeSections={generatedThemeSections}
+            onGeneratePrompt={handleGeneratePrompt}
             onDropMaterial={handleDropMaterial}
             onRemoveMaterial={handleRemoveMaterial}
           />

@@ -193,23 +193,33 @@
 }
 
 .utopia-home__camera-panel {
+  position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 14px;
   width: 720px;
   max-width: 100%;
   height: clamp(200px, calc(100svh - 411px), 319px);
   border: 1px dashed #dedede;
   border-radius: 13px;
   background: #fdfdfd;
+  overflow: hidden;
 }
 
 .utopia-home__camera-content {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
   width: 227px;
+}
+
+.utopia-home__camera-panel:has(.utopia-home__prompt-debug) .utopia-home__camera-content {
+  transform: translateY(-54px);
 }
 
 .utopia-home__camera-icon {
@@ -243,6 +253,84 @@
 
 .utopia-home__camera-copy p:last-child {
   color: #6a6a6a;
+}
+
+.utopia-home__prompt-debug {
+  position: absolute;
+  right: 24px;
+  bottom: 18px;
+  left: 24px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: auto;
+  max-height: 112px;
+  padding: 12px 14px;
+  border: 1px solid #ececec;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  overflow: auto;
+}
+
+.utopia-home__prompt-debug-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #000000;
+  font-family: Inter, Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.utopia-home__prompt-debug-header span:last-child {
+  color: #787878;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.utopia-home__prompt-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.utopia-home__prompt-sections li {
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+  width: 100%;
+}
+
+.utopia-home__prompt-sections span {
+  color: #5f5f5f;
+  font-family: Inter, Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-transform: capitalize;
+}
+
+.utopia-home__prompt-sections p,
+.utopia-home__prompt-text {
+  margin: 0;
+  color: #333333;
+  font-family: Inter, Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.utopia-home__prompt-text {
+  color: #666666;
 }
 
 .utopia-home__workflow {
@@ -1016,6 +1104,14 @@
   padding-bottom: 16px;
 }
 
+.utopia-library-detail-card--back[data-item-id='linen-fabric'] {
+  padding: 21px 27px 39px 21px;
+}
+
+.utopia-library-detail-card--back[data-item-id='paper-lantern'] {
+  padding: 11px 27px 0 21px;
+}
+
 .utopia-library-detail-back__stack {
   position: relative;
   display: flex;
@@ -1090,6 +1186,14 @@
   width: 110px;
 }
 
+.utopia-library-detail-card--back[data-item-id='linen-fabric'] .utopia-library-detail-back__summary-copy {
+  width: 110px;
+}
+
+.utopia-library-detail-card--back[data-item-id='paper-lantern'] .utopia-library-detail-back__summary-copy {
+  width: 110px;
+}
+
 .utopia-library-detail-back__summary-copy p {
   width: 100%;
   margin: 0;
@@ -1120,6 +1224,14 @@
 }
 
 .utopia-library-detail-card--back[data-item-id='andesite-pebble'] .utopia-library-detail-back__details {
+  gap: 32px;
+}
+
+.utopia-library-detail-card--back[data-item-id='linen-fabric'] .utopia-library-detail-back__details {
+  gap: 32px;
+}
+
+.utopia-library-detail-card--back[data-item-id='paper-lantern'] .utopia-library-detail-back__details {
   gap: 32px;
 }
 
@@ -1246,6 +1358,22 @@
 
 .utopia-library-detail-card--back[data-item-id='sphere'] .utopia-library-detail-back__about p {
   width: 318px;
+}
+
+.utopia-library-detail-card--back[data-item-id='linen-fabric'] .utopia-library-detail-back__chips {
+  gap: 5px;
+}
+
+.utopia-library-detail-card--back[data-item-id='paper-lantern'] .utopia-library-detail-back__chips {
+  gap: 5px;
+}
+
+.utopia-library-detail-card--back[data-item-id='linen-fabric'] .utopia-library-detail-back__about p {
+  width: 289px;
+}
+
+.utopia-library-detail-card--back[data-item-id='paper-lantern'] .utopia-library-detail-back__about p {
+  width: 289px;
 }
 
 .utopia-library-detail-back__sr-only {
@@ -1654,6 +1782,14 @@
     padding: 17px 20px 23px 17px;
   }
 
+  .utopia-library-detail-card--back[data-item-id='linen-fabric'] {
+    padding: 17px 20px 23px 17px;
+  }
+
+  .utopia-library-detail-card--back[data-item-id='paper-lantern'] {
+    padding: 17px 20px 23px 17px;
+  }
+
   .utopia-library-detail-back__content {
     gap: 24px;
     width: 100%;
@@ -1861,6 +1997,14 @@
   }
 
   .utopia-library-detail-card--back {
+    padding: 18px 18px 24px;
+  }
+
+  .utopia-library-detail-card--back[data-item-id='linen-fabric'] {
+    padding: 18px 18px 24px;
+  }
+
+  .utopia-library-detail-card--back[data-item-id='paper-lantern'] {
     padding: 18px 18px 24px;
   }
 
