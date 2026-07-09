@@ -208,6 +208,16 @@
   overflow: hidden;
 }
 
+.utopia-home__base-room-image {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  object-fit: contain;
+}
+
 .utopia-home__camera-content {
   position: relative;
   z-index: 1;
@@ -218,7 +228,18 @@
   width: 227px;
 }
 
-.utopia-home__camera-panel:has(.utopia-home__prompt-debug) .utopia-home__camera-content {
+.utopia-home__camera-content--overlay {
+  width: auto;
+  min-width: 196px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.68);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(6px);
+}
+
+.utopia-home__camera-panel:has(.utopia-home__prompt-debug) .utopia-home__camera-content--overlay {
   transform: translateY(-54px);
 }
 
@@ -331,6 +352,19 @@
 
 .utopia-home__prompt-text {
   color: #666666;
+}
+
+.utopia-home__payload-debug {
+  margin: 0;
+  color: #787878;
+  font-family: Inter, Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.utopia-home__payload-debug--error {
+  color: #b42318;
 }
 
 .utopia-home__workflow {

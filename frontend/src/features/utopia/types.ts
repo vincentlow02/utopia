@@ -41,3 +41,31 @@ export type PromptBuildResult = {
   }>
   selectedMaterials: MaterialMetadata[]
 }
+
+export type UtopiaGenerationPayload = {
+  baseImageDataUrl: string
+  promptText: string
+  assignments: UtopiaThemeAssignments
+  materialsSnapshot: MaterialMetadata[]
+}
+
+export type UtopiaGenerationPayloadDebugSummary = {
+  promptLength: number
+  selectedMaterialCount: number
+  hasBaseImageDataUrl: boolean
+  baseImageMimeType: string
+}
+
+export type UtopiaGenerateImageResponse = {
+  imageUrl?: string
+  imageDataUrl?: string
+  promptText: string
+  providerRequestId?: string
+  debug?: {
+    provider?: string
+    model?: string
+    promptLength: number
+    selectedMaterialCount: number
+    baseImageMimeType?: string
+  }
+}

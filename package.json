@@ -3,9 +3,12 @@
   "private": true,
   "scripts": {
     "dev": "npm run dev --prefix frontend",
+    "dev:server": "npm run dev --prefix server",
     "build": "npm run build --prefix frontend",
+    "build:server": "npm run build --prefix server",
     "preview": "npm run preview --prefix frontend",
     "typecheck": "npm run typecheck --prefix frontend",
+    "typecheck:server": "npm run typecheck --prefix server",
     "lint": "npm run lint --prefix frontend"
   }
 }
