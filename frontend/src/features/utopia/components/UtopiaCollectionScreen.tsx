@@ -39,7 +39,7 @@ import takePhotoIconUrl from '../../../assets/icons/utopia/take-photo.svg'
 import uploadImageIconUrl from '../../../assets/icons/utopia/upload-image.svg'
 import defaultRoomImageUrl from '../../../assets/images/base-room/default-room.jpg'
 import { libraryCategories, materialsById, utopiaMaterials } from '../data/materials'
-import { utopiaThemeDefinitions } from '../data/themes'
+import { themeDefinitionById, utopiaThemeDefinitions } from '../data/themes'
 import { buildUtopiaPrompt } from '../prompt/buildUtopiaPrompt'
 import { generateUtopiaImage, isUtopiaImageApiConfigured } from '../services/generateUtopiaImage'
 import { prepareUtopiaGenerationPayload, summarizeUtopiaGenerationPayload } from '../services/prepareUtopiaGenerationPayload'
@@ -1458,7 +1458,13 @@ function AccountPanelOverlay({ copy, selectedLanguageCode, onClose, onLanguageCh
   )
 }
 
-function GeneratedImageOverlay({ imageUrl, onClose }: { imageUrl: string; onClose: () => void }) {
+export type GalleryItem = {
+  id: string
+  imageUrl: string
+  assignments: UtopiaThemeAssignments
+}
+
+function GeneratedImageOverlay({ item, copy, onClose }: { item: GalleryItem; copy: UtopiaCopy; onClose: () => void }) {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose()
@@ -1468,6 +1474,8 @@ function GeneratedImageOverlay({ imageUrl, onClose }: { imageUrl: string; onClos
       document.removeEventListener('keydown', handleKeyDown)
     }
   }, [onClose])
+  
+  const assignedEntries = Object.entries(item.assignments || {}).filter(([, materialId]) => materialId) as [UtopiaThemeId, MaterialId][]
 
   return (
     <div
@@ -1477,44 +1485,96 @@ function GeneratedImageOverlay({ imageUrl, onClose }: { imageUrl: string; onClos
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(0,0,0,0.85)',
+        backgroundColor: 'rgba(255,255,255,0.7)',
+        backdropFilter: 'blur(10px)',
         zIndex: 1000,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+        padding: '24px',
       }}
     >
-      <div style={{ position: 'relative', maxWidth: '90vw', maxHeight: '90vh' }}>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close overlay"
-          style={{
-            position: 'absolute',
-            top: -40,
-            right: 0,
-            background: 'none',
-            border: 'none',
-            color: 'white',
-            cursor: 'pointer',
-            padding: 8,
-          }}
-        >
-          <CloseIcon />
-        </button>
+      <div 
+        className="utopia-generated-card" 
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          backgroundColor: 'white',
+          borderRadius: 24,
+          overflow: 'hidden',
+          boxShadow: '0 12px 48px rgba(0,0,0,0.08)',
+          maxWidth: '1000px',
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         <img
-          src={imageUrl}
+          src={item.imageUrl}
           alt="Generated space"
           style={{
-            maxWidth: '100%',
-            maxHeight: '90vh',
-            objectFit: 'contain',
-            borderRadius: 8,
-            boxShadow: '0 4px 24px rgba(0,0,0,0.2)',
+            width: '100%',
+            height: 'auto',
+            maxHeight: '65vh',
+            objectFit: 'cover',
           }}
-          onClick={(e) => e.stopPropagation()}
         />
+        
+        <div style={{
+          padding: '24px 32px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderTop: '1px solid rgba(0,0,0,0.05)',
+        }}>
+          <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap' }}>
+            {assignedEntries.map(([themeId, materialId]) => {
+              const material = materialsById[materialId]
+              const themeTitle = copy.elements[themeDefinitionById[themeId].cardId].title
+              return (
+                <div key={themeId} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <img src={material.imageUrl} alt={material.name} style={{ width: 40, height: 40, borderRadius: 8, objectFit: 'cover' }} />
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: '#111' }}>{copy.library.items[materialId] ?? material.name}</span>
+                    <span style={{ fontSize: 11, color: '#666' }}>{themeTitle}</span>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+          
+          <button 
+            type="button"
+            onClick={() => {
+              const a = document.createElement('a')
+              a.href = item.imageUrl
+              a.download = `utopia-${item.id}.jpg`
+              document.body.appendChild(a)
+              a.click()
+              document.body.removeChild(a)
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '10px 16px',
+              border: '1px solid #E5E5E5',
+              borderRadius: 8,
+              backgroundColor: 'transparent',
+              fontSize: 13,
+              fontWeight: 600,
+              color: '#111',
+              cursor: 'pointer',
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Download
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -1523,13 +1583,7 @@ function GeneratedImageOverlay({ imageUrl, onClose }: { imageUrl: string; onClos
 type UtopiaHomeViewProps = {
   copy: UtopiaCopy
   assignments: UtopiaThemeAssignments
-  generationApiError: string
-  generationApiResponse: UtopiaGenerateImageResponse | null
   generatedPrompt: string
-  generatedThemeSections: PromptBuildResult['themeSections']
-  generationPayloadDebug: UtopiaGenerationPayloadDebugSummary | null
-  generationPayloadError: string
-  generationPayloadStatus: string
   isCallingGenerationApi: boolean
   isPreparingGenerationPayload: boolean
   onGeneratePrompt: () => void
@@ -1540,13 +1594,7 @@ type UtopiaHomeViewProps = {
 function UtopiaHomeView({
   assignments,
   copy,
-  generationApiError,
-  generationApiResponse,
   generatedPrompt,
-  generatedThemeSections,
-  generationPayloadDebug,
-  generationPayloadError,
-  generationPayloadStatus,
   isCallingGenerationApi,
   isPreparingGenerationPayload,
   onDropMaterial,
@@ -1557,15 +1605,6 @@ function UtopiaHomeView({
   const [activeDropZone, setActiveDropZone] = useState<UtopiaThemeId | null>(null)
   
   const isGenerating = isCallingGenerationApi || isPreparingGenerationPayload
-
-  const styleDirectionText = useMemo(() => {
-    if (!generatedPrompt) return ''
-    const assignedMaterialIds = Object.values(assignments).filter(Boolean) as string[]
-    if (assignedMaterialIds.length === 0) return 'Default base room design.'
-    
-    const materialNames = assignedMaterialIds.map(id => copy.library.items[id as keyof typeof copy.library.items])
-    return `Interior space styled with ${materialNames.join(', ')}.`
-  }, [generatedPrompt, assignments, copy.library.items])
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -1592,58 +1631,35 @@ function UtopiaHomeView({
             <p>{copy.home.cameraInstruction}</p>
           </div>
         </div>
-        {generatedPrompt ? (
-          <section className="utopia-home__prompt-debug" aria-label="Generated style direction">
-            <div style={{ marginBottom: 16 }}>
-              <div className="utopia-home__prompt-debug-header">
-                <span style={{ fontWeight: 600, color: '#333' }}>Design Direction</span>
+        
+        {isGenerating ? (
+          <div style={{
+            position: 'absolute', inset: 0, backgroundColor: 'rgba(255,255,255,0.4)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10
+          }}>
+            <div style={{
+              backgroundColor: 'white', borderRadius: 24, padding: '40px 60px',
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.05)'
+            }}>
+              <SparkleIcon />
+              <h2 style={{ fontSize: 20, fontWeight: 600, color: '#111', margin: '16px 0 4px' }}>Generating...</h2>
+              <p style={{ fontSize: 13, color: '#666', margin: 0 }}>Creating your interior space</p>
+              <div style={{
+                width: '180px', height: '4px', backgroundColor: '#F0F0F0', borderRadius: '2px',
+                marginTop: '24px', overflow: 'hidden', position: 'relative'
+              }}>
+                <div style={{
+                  position: 'absolute', top: 0, left: 0, height: '100%', width: '40%',
+                  backgroundColor: '#c7b39a', borderRadius: '2px',
+                  animation: 'utopia-loading-slide 1.5s infinite ease-in-out'
+                }} />
               </div>
-              <p style={{ fontSize: 14, color: '#444', lineHeight: 1.5, marginTop: 8 }}>{styleDirectionText}</p>
-              
-              {generationApiResponse && (
-                <p style={{ fontSize: 12, color: '#666', marginTop: 8 }}>
-                  Provider: {generationApiResponse.debug?.provider || 'local/mock'} · Model: {generationApiResponse.debug?.model || 'mock'}
-                </p>
-              )}
             </div>
-
-            <details style={{ opacity: 0.7 }}>
-              <summary className="utopia-home__prompt-debug-header" style={{ cursor: 'pointer', outline: 'none' }}>
-                <span>Prompt Preview & Debug</span>
-                <span style={{ fontWeight: 'normal' }}>{generatedThemeSections.length ? `${generatedThemeSections.length} theme cues` : 'Base fallback'}</span>
-              </summary>
-              <div style={{ marginTop: 12 }}>
-                {generatedThemeSections.length ? (
-                  <ul className="utopia-home__prompt-sections">
-                    {generatedThemeSections.map((section) => (
-                      <li key={`${section.themeId}-${section.materialId}`}>
-                        <span>{section.themeId}</span>
-                        <p>{section.text}</p>
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
-                <p className="utopia-home__prompt-text">{generatedPrompt}</p>
-                {isPreparingGenerationPayload ? <p className="utopia-home__payload-debug">Preparing local generation payload...</p> : null}
-                {generationPayloadDebug ? (
-                  <p className="utopia-home__payload-debug">
-                    Payload ready · {generationPayloadDebug.promptLength} prompt chars · {generationPayloadDebug.selectedMaterialCount} selected materials ·
-                    base image {generationPayloadDebug.hasBaseImageDataUrl ? 'ready' : 'missing'} · {generationPayloadDebug.baseImageMimeType}
-                  </p>
-                ) : null}
-                {generationPayloadStatus ? <p className="utopia-home__payload-debug">{generationPayloadStatus}</p> : null}
-                {isCallingGenerationApi ? <p className="utopia-home__payload-debug">Calling backend...</p> : null}
-                {generationApiResponse ? (
-                  <p className="utopia-home__payload-debug">
-                    Backend ready ({generationApiResponse.debug?.provider ?? 'unknown'}) — {generationApiResponse.providerRequestId ?? 'no-id'} — {generationApiResponse.debug?.promptLength ?? 0} prompt chars{generationApiResponse.imageUrl ? ' — image received' : ''}
-                  </p>
-                ) : null}
-              </div>
-            </details>
-            {generationPayloadError ? <p className="utopia-home__payload-debug utopia-home__payload-debug--error">{generationPayloadError}</p> : null}
-            {generationApiError ? <p className="utopia-home__payload-debug utopia-home__payload-debug--error">{generationApiError}</p> : null}
-          </section>
+          </div>
         ) : null}
+
+
       </div>
 
       <div className="utopia-home__workflow" data-node-id="268:205">
@@ -1750,8 +1766,7 @@ function UtopiaHomeView({
           className="utopia-home__generate-button"
           data-node-id="266:144"
           onClick={onGeneratePrompt}
-          disabled={isGenerating}
-          style={{ opacity: isGenerating ? 0.7 : 1, cursor: isGenerating ? 'not-allowed' : 'pointer' }}
+          disabled={isGenerating || Object.values(assignments).filter(Boolean).length === 0}
         >
           <SparkleIcon />
           <span>{isGenerating ? 'Generating...' : copy.home.generate}</span>
@@ -1770,11 +1785,17 @@ export function UtopiaCollectionScreen() {
   const [generatedPrompt, setGeneratedPrompt] = useState('')
   const [generatedThemeSections, setGeneratedThemeSections] = useState<PromptBuildResult['themeSections']>([])
   const [generationApiError, setGenerationApiError] = useState('')
-  const [activeGeneratedImageUrl, setActiveGeneratedImageUrl] = useState<string | null>(null)
-  const [galleryItems, setGalleryItems] = useState<{ id: string; imageUrl: string }[]>(() => {
+  const [activeGeneratedItem, setActiveGeneratedItem] = useState<GalleryItem | null>(null)
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>(() => {
     try {
       const stored = localStorage.getItem('utopia_gallery_items')
-      if (stored) return JSON.parse(stored)
+      if (stored) {
+        const parsed = JSON.parse(stored)
+        return parsed.map((item: any) => ({
+          ...item,
+          assignments: item.assignments || {},
+        }))
+      }
     } catch {
       // Ignore parse errors
     }
@@ -1831,7 +1852,7 @@ export function UtopiaCollectionScreen() {
     setGeneratedThemeSections(promptResult.themeSections)
     setGenerationApiError('')
     setGenerationApiResponse(null)
-    setActiveGeneratedImageUrl(null)
+    setActiveGeneratedItem(null)
     setGenerationPayloadDebug(null)
     setGenerationPayloadError('')
     setGenerationPayloadStatus('')
@@ -1860,14 +1881,18 @@ export function UtopiaCollectionScreen() {
       setGenerationApiResponse(generationResponse)
       
       const newImageUrl = generationResponse.imageUrl ?? generationResponse.imageDataUrl ?? null
-      setActiveGeneratedImageUrl(newImageUrl)
       
       if (newImageUrl) {
+        const newItem: GalleryItem = {
+          id: generationResponse.providerRequestId || Date.now().toString(),
+          imageUrl: newImageUrl,
+          assignments: { ...themeAssignments }, // snapshot of current assignments
+        }
+        
+        setActiveGeneratedItem(newItem)
+        
         setGalleryItems((prev) => [
-          {
-            id: generationResponse.providerRequestId || Date.now().toString(),
-            imageUrl: newImageUrl,
-          },
+          newItem,
           ...prev,
         ])
       }
@@ -1978,13 +2003,7 @@ export function UtopiaCollectionScreen() {
           <UtopiaHomeView
             copy={copy}
             assignments={themeAssignments}
-            generationApiError={generationApiError}
-            generationApiResponse={generationApiResponse}
             generatedPrompt={generatedPrompt}
-            generatedThemeSections={generatedThemeSections}
-            generationPayloadDebug={generationPayloadDebug}
-            generationPayloadError={generationPayloadError}
-            generationPayloadStatus={generationPayloadStatus}
             isCallingGenerationApi={isCallingGenerationApi}
             isPreparingGenerationPayload={isPreparingGenerationPayload}
             onGeneratePrompt={handleGeneratePrompt}
@@ -2007,7 +2026,7 @@ export function UtopiaCollectionScreen() {
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                 }}
-                onClick={() => setActiveGeneratedImageUrl(item.imageUrl)}
+                onClick={() => setActiveGeneratedItem(item)}
               />
             ))}
           </section>
@@ -2023,10 +2042,11 @@ export function UtopiaCollectionScreen() {
         />
       ) : null}
 
-      {activeGeneratedImageUrl ? (
+      {activeGeneratedItem ? (
         <GeneratedImageOverlay
-          imageUrl={activeGeneratedImageUrl}
-          onClose={() => setActiveGeneratedImageUrl(null)}
+          item={activeGeneratedItem}
+          copy={copy}
+          onClose={() => setActiveGeneratedItem(null)}
         />
       ) : null}
     </main>

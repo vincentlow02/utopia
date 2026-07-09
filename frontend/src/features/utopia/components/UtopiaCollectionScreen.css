@@ -570,6 +570,19 @@
   font-weight: 400;
   line-height: 1;
   cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.utopia-home__generate-button:disabled {
+  background: linear-gradient(90deg, #333333, #000000);
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+@keyframes utopia-loading-slide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
 }
 
 .utopia-home__generate-icon {
