@@ -1,18 +1,14 @@
 {
-  "name": "utopia-collection-view",
-  "version": "0.1.0",
+  "name": "utopia",
   "private": true,
-  "type": "module",
   "scripts": {
-    "dev": "vite --host 127.0.0.1",
-    "build": "vite build",
-    "preview": "vite preview --host 127.0.0.1"
-  },
-  "dependencies": {
-    "@vitejs/plugin-react": "^5.1.2",
-    "vite": "^7.3.5",
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3"
-  },
-  "devDependencies": {}
+    "dev": "npm run dev --prefix frontend",
+    "dev:server": "npm run dev --prefix server",
+    "build": "npm run build --prefix frontend",
+    "build:server": "npm run build --prefix server",
+    "preview": "npm run preview --prefix frontend",
+    "typecheck": "npm run typecheck --prefix frontend",
+    "typecheck:server": "npm run typecheck --prefix server",
+    "lint": "npm run lint --prefix frontend"
+  }
 }
