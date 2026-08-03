@@ -1,10 +1,10 @@
 # Utopia
 
-Utopia is a human–AI co-creation prototype that turns physical material references into interior design concepts.
+Utopia is an ongoing graduation research project exploring how physical material references can support human–AI co-creation in interior design.
 
 Instead of asking users to write a long image-generation prompt, the interface lets them choose tangible references—such as oak, linen, stone, or a paper lantern—and assign each reference a design role: **Function**, **Material**, **Mood**, **Furniture**, or **Nature**. Utopia translates those choices into a structured prompt, combines it with a base-room image, and sends the result to an image-generation service.
 
-> **Project status: Active development.** The core interaction prototype and local API pipeline are working, but the product, architecture, and generation experience are still evolving. APIs and implementation details may change. A mock provider is included for local development; real image output requires Qwen/DashScope credentials.
+> **Work in Progress — Graduation Research Project.** Utopia is still under active development as part of my graduation research. The current repository contains a working research prototype, not a finished commercial product. Features, research scope, interaction design, and implementation details may change as the study develops. A mock provider is included for local development; real image output requires Qwen/DashScope credentials.
 
 ## Development status
 
@@ -34,7 +34,9 @@ Instead of asking users to write a long image-generation prompt, the interface l
 - More image providers behind the same server-side interface
 - Production deployment, monitoring, and usage controls
 
-## Why this project exists
+## Graduation research context
+
+This prototype is being developed as a research artifact for my graduation project. It is used to explore and iteratively evaluate an alternative way for people to communicate spatial design intent to generative AI. The repository documents both the working implementation and the technical directions that are still being investigated.
 
 Most generative-design tools begin with an empty text box. That assumes users already know how to describe spatial qualities in prompt language. Utopia explores a more approachable interaction model: people compose a space through familiar objects and materials, while the application handles prompt construction behind the scenes.
 
